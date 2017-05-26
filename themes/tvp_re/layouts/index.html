@@ -1,0 +1,105 @@
+{{ partial "header.html" . }}
+
+    <div id="NameField" class="container">
+        <div class="pure-u-1 pure-u-md-1-3 name-field">
+            <label for="first-name">Enter Name:</label>
+            <input id="username" class="pure-u-2"  type="text">
+            <a class="pure-button" href="#" id="SetName">Submit</a>
+        </div>
+    </div>
+
+    <div id="ProfilesTable" class="container" style="display: none;">
+        <h3 id="UserWelcome"></h3>
+        <table id="TVP-table" class="pure-table tvp-table">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Version</th>
+                    <th>Accuracy</th>
+                    <th>Data Set</th>
+                    <th>Trainig Set</th>
+                    <th>Test Duration</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr class="odd">
+                    <td>
+                        <a  onclick="fetchProductRecommendation();" class="tvp-link">
+                            Product      
+                        </a>
+                    </td>
+                    <td>3.2</td>
+                    <td>75%</td>
+                    <td>70</td>
+                    <td>30</td>
+                    <td>12 Hr</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="VideoProfileView" class="tvp-container-center" style="display: none;">
+        <h3 id="VideoTitle" class="tvp-title"></h3>
+
+        <div id="TVPlayerHolder" style="
+    width: 100%;
+    height: 408px;
+    background-color: #dddddd;
+">
+            Is A Player
+        </div>
+
+        <h3 class="tvp-title">Matches Video Profile</h3>
+        <h2 id="ProfileTitle" class="tvp-profile-title">Active Lifestyle > Sports fans > Soccer enthusiasts</h2>
+
+        <div class="tvp-button-group">
+            <button id="FalseMatch" class="tvp-button btn-red">No</button>
+            <button id="TrueMatch" class="tvp-button btn-green">Yes</button>
+        </div>
+    </div>
+
+    <div id="ProductsRecommendationView" class="tvp-container-center" style="display: none;">
+            <h3 id="VideoTitlePR" class="tvp-title"></h3>
+
+            <div id="TVPlayerHolder" style="
+        width: 100%;
+        height: 408px;
+        background-color: #dddddd;
+    ">
+                Is A Player
+            </div>
+
+            <h3 class="tvp-title">Only Select Matching Products</h3>
+
+            <div class="product-grid">
+                <div class="pure-g" id="ProductsGrid">
+                    <div class="pure-u-1-4">
+                        <div class="product-img-thumb active" style="background-image: url(http://s7d1.scene7.com/is/image/BedBathandBeyond/35680942204121p?$478$);"></div>
+                        <div class="product-title">Nike Mercurial Victory Dynamic Fit SG Football Boots</div>
+                    </div>
+                    <div class="pure-u-1-4">
+                        <div class="product-img-thumb" style="background-image: url(http://s7d1.scene7.com/is/image/BedBathandBeyond/35680942204121p?$478$);"></div>
+                        <div class="product-title">Adidas Goletto SG Football Boots</div>
+                    </div>
+                    <div class="pure-u-1-4">
+                        <div class="product-img-thumb" style="background-image: url(http://s7d1.scene7.com/is/image/BedBathandBeyond/35680942204121p?$478$);"></div>
+                        <div class="product-title">Adidas Goletto SG Football Boots</div>
+                    </div>
+                    <div class="pure-u-1-4">
+                        <div class="product-img-thumb" style="background-image: url(http://s7d1.scene7.com/is/image/BedBathandBeyond/35680942204121p?$478$);"></div>
+                        <div class="product-title">Adidas Goletto SG Football Boots</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tvp-button-group">
+                <button id="TrueMatch" class="tvp-button btn-green">Submit</button>
+            </div>
+        </div>
+
+    {{ partial "scripts.html" . }}
+
+    <script type="text/javascript" src="{{ .Site.BaseURL }}js/index-script.js"></script>
+
+{{ partial "footer.html" . }}
