@@ -1,3 +1,3 @@
 {
-	"layout": "index", "title": "Recommendation Engine", "name": "brand-widget"
+	"layout": "index", "title": "Recommendation Engine"
 }

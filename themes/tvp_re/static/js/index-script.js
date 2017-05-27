@@ -127,8 +127,7 @@ function setMatch(valid) {
 	if (typeof currentVideo !== "undefined") {
 		renderProfileView(currentVideo);
 	} else {
-		alert ("No More Videos");
-		window.location.reload();
+		fetchViedoProfiles(currentProfile.id, profiles.indexOf(currentProfile));
 	}
 	
 }
@@ -196,6 +195,7 @@ function renderVideoProfilesView(data) {
 		renderProfileView(currentVideo);
 	} else {
 		alert ("There's no Videos");
+		window.location.reload();
 	}
 }
 
@@ -229,7 +229,7 @@ function renderProductRecommendationsView(data) {
 
 
 function renderProductView() {
-	$("#VideoTitlePR").html(currentVideo.title);
+	$("#VideoTitle").html(currentVideo.title);
 
 	var $productsGrid = $("#ProductsGrid");
 	var pt = '';
