@@ -55,10 +55,6 @@ $( document ).ready(function() {
 
 });
 
-function showAlternateProfileModal() {
-	console.log("qwedf");
-}
-
 function setPlayer() {
 	playerDivId = 'TVPlayerHolder';
 	player =  new TVPage.player({
@@ -130,6 +126,10 @@ function setMatch(valid, profileId, index) {
 		user: localStorage.getItem("username"),
 		position: currentVideo._position
 	};
+
+	if (typeof profileId !== 'undefined') {
+		data.IsCorrection = true;
+	}
 
 	$.ajax({
 		url: apiBaseUrl + "/profiles/testVideoProfile/" + pId,
