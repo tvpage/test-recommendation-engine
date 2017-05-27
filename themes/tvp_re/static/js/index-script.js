@@ -7,7 +7,7 @@ var selectedProducts = [];
 var profileVersion = '';
 var player = null
 var playerDivId = '';
-var apiBaseUrl = '//local.tvpage.com/api';
+var apiBaseUrl = '//test.tvpage.com/api';
 
 $( document ).ready(function() {
 	fetchProfiles();
