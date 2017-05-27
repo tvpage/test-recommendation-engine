@@ -1,8 +1,55 @@
 {{ partial "header.html" . }}
+
 	<div class="tvp-container-center">
-		
+		<div id="ProductsRecommendationView" class="tvp-container-center" >
+            <h3 id="VideoTitlePR" class="tvp-title"></h3>
+
+            <div id="TVPlayerHolder" style="
+        width: 100%;
+        height: 408px;
+        background-color: #dddddd;
+    ">
+                Is A Player
+            </div>
+
+            <h3 class="tvp-title">Only Select Matching Products</h3>
+
+            <div class="product-grid">
+                <div class="pure-g" id="ProductsGrid">
+                    <div class="pure-u-1-4">
+                    	<div class="product-img-thumb-wrapper active">
+                    		<div class="product-img-thumb active" style="background-image: url(http://s7d1.scene7.com/is/image/BedBathandBeyond/35680942204121p?$478$);"></div>
+                    	</div>
+                        <div class="product-title">Nike Mercurial Victory Dynamic Fit SG Football Boots</div>
+                    </div>
+                    <div class="pure-u-1-4">
+                        <div class="product-img-thumb-wrapper ">
+                    		<div class="product-img-thumb active" style="background-image: url(http://s7d1.scene7.com/is/image/BedBathandBeyond/35680942204121p?$478$);"></div>
+                    	</div>
+                        <div class="product-title">Nike Mercurial Victory Dynamic Fit SG Football Boots</div>
+                    </div>
+                    <div class="pure-u-1-4">
+                        <div class="product-img-thumb-wrapper ">
+                    		<div class="product-img-thumb active" style="background-image: url(http://s7d1.scene7.com/is/image/BedBathandBeyond/35680942204121p?$478$);"></div>
+                    	</div>
+                        <div class="product-title">Nike Mercurial Victory Dynamic Fit SG Football Boots</div>
+                    </div>
+                    <div class="pure-u-1-4">
+                        <div class="product-img-thumb-wrapper ">
+                    		<div class="product-img-thumb active" style="background-image: url(http://s7d1.scene7.com/is/image/BedBathandBeyond/35680942204121p?$478$);"></div>
+                    	</div>
+                        <div class="product-title">Nike Mercurial Victory Dynamic Fit SG Football Boots</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tvp-button-group">
+                <button id="TrueMatch" class="tvp-button btn-green">Submit</button>
+            </div>
+        </div>
 	</div>
     
+
 
     {{ partial "scripts.html" . }}
 
