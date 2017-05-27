@@ -53,7 +53,7 @@
 
     {{ partial "scripts.html" . }}
 
-    <script type="text/javascript" src="//cdnjs.tvpage.com/tvplayer/tvp-3.0.1.min.js"></script>
-    <script type="text/javascript" src="{{ .Site.BaseURL }}js/video-profile-script.js"></script>
+    <!-- <script type="text/javascript" src="//cdnjs.tvpage.com/tvplayer/tvp-3.0.1.min.js"></script> -->
+    <script type="text/javascript" src='{{ "js/video-profile-script.js" | relURL }}' ></script>
 
 {{ partial "footer.html" . }}
