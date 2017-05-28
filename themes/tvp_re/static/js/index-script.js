@@ -1,5 +1,7 @@
 var videos = [];
 var currentVideo = null;
+var currentProduct = null;
+var currentProfiles = [];
 var profiles = [];
 var currentProfile = null;
 var products = [];
@@ -40,6 +42,10 @@ $( document ).ready(function() {
 
 	$('#SudmitProducts').click(function() {
 		setProductsMatch();
+	});
+
+	$('#SudmitProfiles').click(function() {
+		setProfilesMatch();
 	});
 
 	setPlayer();
@@ -85,6 +91,27 @@ function fetchProfiles() {
 			$(".spinner-overlay").hide();
 		}
 	});
+}
+
+function setProfilesMatch() {
+	var data = {
+		videoId: currentVideo == null ? null : currentVideo.id,
+		productId: currentProduct == null ? null : currentProduct.id,
+		profiles: currentProfiles,
+		user: localStorage.getItem("username")
+	};
+
+	$.ajax({
+		url: apiBaseUrl + "/profiles/testVideoProfiles",
+		type: "POST",
+		crossDomain: true,
+		dataType: 'json',
+		data: JSON.stringify(data)
+	});
+	if ( currentVideo == null )
+		fetchProfileProducts();
+	else
+		fetchProfileVideos();
 }
 
 function setProductsMatch() {
@@ -167,6 +194,33 @@ function fetchProductRecommendation() {
 	});
 }
 
+function fetchProfileVideos() {
+	$(".spinner-overlay").show();
+	$.ajax({
+		url: apiBaseUrl + "/profiles/testProfileVideos",
+		jsonpCallback: "renderProfileVideoView",
+		dataType: "jsonp",
+		error: function(){
+			alert ("There's no Videos");
+			window.location.reload();
+			$(".spinner-overlay").hide();
+		}
+	});
+}
+function fetchProfileProducts() {
+	$(".spinner-overlay").show();
+	$.ajax({
+		url: apiBaseUrl + "/profiles/testProfileProducts",
+		jsonpCallback: "renderProfileProductView",
+		dataType: "jsonp",
+		error: function(){
+			alert ("There's no Videos");
+			window.location.reload();
+			$(".spinner-overlay").hide();
+		}
+	});
+}
+
 function fetchViedoProfiles(id, index) {
 	currentProfile = profiles[index];
 	$(".spinner-overlay").show();
@@ -204,6 +258,8 @@ function renderProfileView(video) {
 	$("#VideoTitle").html(video.title);
 	$("#ProfileTitle").html(currentProfile.name);
 
+	$('#TVProductHolder').hide();
+	$('#TVPlayerHolder').show();
 	player.loadVideo(createAsset(video));
 
 	$("#SelectionView").show();
@@ -219,12 +275,83 @@ function renderProductRecommendationsView(data) {
 		profileVersion = data.profileVersion;
 		$('#HeaderTitle').html('Product Recommedation Engine');
 		$('#ProfilesTable').hide();
+		$('#TVProductHolder').hide();
+		$('#TVPlayerHolder').show();
 		player.loadVideo(createAsset(currentVideo));
 		renderProductView();
 	} else {
 		alert ("There's no Products");
 	}
 	$(".spinner-overlay").hide();
+}
+
+function renderProfileVideoView(data) {
+	if (typeof data.entity !== "undefined" && typeof data.profiles !== "undefined" && data.profiles.length > 0) {
+		// setPlayer("TVPlayerHolderPR");
+		currentVideo = data.entity;
+		currentProduct = null;
+		currentProfiles = data.profiles;
+		$('#HeaderTitle').html('Video Profiles');
+		$('#ProfilesTable').hide();
+		$('#TVPlayerHolder').show();
+		$('#TVProductHolder').hide();
+		player.loadVideo(createAsset(currentVideo));
+		renderProfilesView();
+	} else {
+		alert ("There's no Video Suggestions");
+	}
+	$(".spinner-overlay").hide();
+}
+function renderProfileProductView(data) {
+	if (typeof data.entity !== "undefined" && typeof data.profiles !== "undefined" && data.profiles.length > 0) {
+		// setPlayer("TVPlayerHolderPR");
+		currentVideo = null;
+		currentProduct = data.entity;
+		currentProfiles = data.profiles;
+		$('#HeaderTitle').html('Product Profiles');
+		$('#ProfilesTable').hide();
+		$('#TVProductHolder').show();
+		$('#TVPlayerHolder').hide();
+		$('#TVProductHolder img').attr('src', currentProduct.imageUrl);
+		renderProfilesView();
+	} else {
+		alert ("There's no Product Suggestions");
+	}
+	$(".spinner-overlay").hide();
+}
+
+
+function renderProfilesView() {
+	$("#VideoTitle").html(currentVideo == null ? currentProduct.title : currentVideo.title);
+
+	var $profilesGrid = $("#ProfilesGrid");
+	var pt = '';
+	$.each(currentProfiles, function(key, profile) {
+		pt += '<div class="pure-u-1-4">';
+        pt += '<div class="product-img-thumb-wrapper ">';
+        pt += '<div id="profileId-' + profile.id + '" onclick="setProfile(' + key + ')" class="product-img-thumb" ></div>';
+        pt += '</div>';
+        pt += '<div class="product-title">' + profile.name + '</div>';
+        pt += '</div>';
+		
+		currentProfiles[key].isMatch = false;
+	});
+
+	$profilesGrid.html(pt);
+	$("#SelectionView").show();
+	$('#ProfileRecommendationView').show();
+}
+
+function setProfile(index) {
+	var $selected = $('#profileId-' + currentProfiles[index].id);
+	if (!$selected.parent().hasClass('active')) {
+		$selected.parent().addClass('active');
+		currentProfiles[index].isMatch = true;
+
+	} else {
+		$selected.parent().removeClass('active');
+		currentProfiles[index].isMatch = false;
+	}
 }
 
 
