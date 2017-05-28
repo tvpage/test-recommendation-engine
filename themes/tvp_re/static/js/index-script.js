@@ -57,6 +57,10 @@ $( document ).ready(function() {
 		setProfilesMatch();
 	});
 
+	$('#NextProfiles').click(function() {
+		nextProfiles();
+	});
+
 	setPlayer();
 
 });
@@ -102,6 +106,12 @@ function fetchProfiles() {
 	});
 }
 
+function nextProfiles(){
+	if ( currentVideo == null )
+		fetchProfileProducts();
+	else
+		fetchProfileVideos();
+}
 function setProfilesMatch() {
 	var data = {
 		videoId: currentVideo == null ? null : currentVideo.id,
@@ -117,10 +127,7 @@ function setProfilesMatch() {
 		dataType: 'json',
 		data: JSON.stringify(data)
 	});
-	if ( currentVideo == null )
-		fetchProfileProducts();
-	else
-		fetchProfileVideos();
+	nextProfiles();
 }
 
 function setProductsMatch() {
