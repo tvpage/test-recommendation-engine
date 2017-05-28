@@ -23,9 +23,7 @@
                     <th>Model</th>
                     <th>Version</th>
                     <th>Accuracy</th>
-                    <th>Data Set</th>
-                    <th>Trainig Set</th>
-                    <th>Test Duration</th>
+                    <th>Data Set <button class="tvp-button btn-green" style="height: 1.2em; width: 2.2em;" onclick="fetchStatistics()">Get</button></th>
                 </tr>
             </thead>
 
@@ -36,11 +34,9 @@
                             Test Product Recommendations
                         </a>
                     </td>
-                    <td>3.2</td>
-                    <td>75%</td>
-                    <td>70</td>
-                    <td>30</td>
-                    <td>12 Hr</td>
+                    <td id="productRecommendationsVersion"></td>
+                    <td id="productRecommendationsAccuracy"></td>
+                    <td id="productRecommendationsDataSet"></td>
                 </tr>
                 <tr class="even">
                     <td>
@@ -48,11 +44,9 @@
                             Test Profile Videos      
                         </a>
                     </td>
-                    <td>3.2</td>
-                    <td>75%</td>
-                    <td>70</td>
-                    <td>30</td>
-                    <td>12 Hr</td>
+                    <td></td>
+                    <td id="profileVideosAccuracy"></td>
+                    <td id="profileVideosDataSet"></td>
                 </tr>
                 <tr class="odd">
                     <td>
@@ -60,11 +54,9 @@
                             Test Profile Products   
                         </a>
                     </td>
-                    <td>3.2</td>
-                    <td>75%</td>
-                    <td>70</td>
-                    <td>30</td>
-                    <td>12 Hr</td>
+                    <td></td>
+                    <td id="profileProductsAccuracy"></td>
+                    <td id="profileProductsDataSet"></td>
                 </tr>
             </tbody>
         </table>
@@ -116,7 +108,7 @@
 
             <div class="tvp-button-group">
                 <button id="SudmitProfiles" class="tvp-button btn-green">Submit</button>
-                <button id="NextProfiles" class="tvp-button btn-yellow">Next</button>
+                <button id="NextProfiles" class="tvp-button btn-yellow">Skip</button>
             </div>
         </div>
     </div>

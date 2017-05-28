@@ -9,7 +9,9 @@ var selectedProducts = [];
 var profileVersion = '';
 var player = null
 var playerDivId = '';
-var apiBaseUrl = '//test.tvpage.com/api';
+var apiBaseUrl = '//local.tvpage.com/api';
+var profileStatistics = [];
+var profileStats;
 
 $( document ).ready(function() {
 	fetchProfiles();
@@ -62,7 +64,6 @@ $( document ).ready(function() {
 	});
 
 	setPlayer();
-
 });
 
 function setPlayer() {
@@ -106,6 +107,102 @@ function fetchProfiles() {
 	});
 }
 
+function renderStatisticsNext(data){
+	var dataSet = 0;
+	dataSet += data.stat.product.no + data.stat.product.corrections + data.stat.product.yes;
+	dataSet += data.stat.video.no + data.stat.video.corrections + data.stat.video.yes;
+	dataSet += data.stat.match.no + data.stat.match.corrections + data.stat.match.yes;
+
+	var yes = 0;
+	yes += data.stat.product.yes + data.stat.video.yes + data.stat.match.yes;
+	var no = 0;
+	no += data.stat.product.no + data.stat.video.no + data.stat.match.no;
+	$('#profileDataSet_'+data.profile).text(dataSet);
+	$('#profileAccuracy_'+data.profile).text(yes+no == 0 ? '' : ( (yes / (yes+no)) * 100).toFixed(2) + '%');
+
+
+	profileStats.product.yes += data.stat.product.yes;
+	profileStats.product.no += data.stat.product.no;
+	profileStats.product.corrections += data.stat.product.corrections;
+	profileStats.video.yes += data.stat.video.yes;
+	profileStats.video.no += data.stat.video.no;
+	profileStats.video.corrections += data.stat.video.corrections;
+	profileStats.match.yes += data.stat.match.yes;
+	profileStats.match.no += data.stat.match.no;
+	profileStats.match.corrections += data.stat.match.corrections;
+
+	fetchStatisticsNext();
+
+}
+function fetchStatisticsNext(){
+	var next = profileStatistics.shift();
+	if ( typeof(next) == 'undefined' ){
+console.log(profileStats);
+                $("#profileVideosAccuracy").text( (profileStats.video.yes + profileStats.video.no == 0 ? 'n/a' : (profileStats.video.yes / (profileStats.video.yes + profileStats.video.no) ) * 100).toFixed(2) + '%' );
+                $("#profileVideosDataSet").text( profileStats.video.yes + profileStats.video.no + profileStats.video.corrections );
+                $("#profileProductsAccuracy").text( (profileStats.product.yes + profileStats.product.no == 0 ? 'n/a' : (profileStats.product.yes / (profileStats.product.yes + profileStats.product.no) ) * 100 ).toFixed(2) + '%' );
+                $("#profileProductsDataSet").text( profileStats.product.yes + profileStats.product.no + profileStats.product.corrections );
+
+		return;
+	}
+	$.ajax({
+		url: apiBaseUrl + '/profiles/testProfileStatistics/' + next,
+		jsonpCallback: "renderStatisticsNext",
+		dataType: "jsonp",
+		error: function(result, sts, err){
+			console.log("Error fetching statistics for profile #" + next + ". " + err + ": " + sts);
+			fetchStatisticsNext();
+		}
+	});
+}
+function fetchStatistics(){
+	if ( profiles.length == 0 ){
+		setTimeout(fetchStatistics, 1000);
+		return;
+	}
+
+	profileStatistics = [];
+	for ( x in profiles ){
+		profileStatistics.push(profiles[x].id);
+	}
+	profileStats = {
+		product: {
+			yes: 0,
+			no: 0,
+			corrections: 0
+		},
+		video: {
+			yes: 0,
+			no: 0,
+			corrections: 0
+		},
+		match: {
+			yes: 0,
+			no: 0,
+			corrections: 0
+		}
+
+	};
+
+	//for ( var i=0;i<2;i++ ){
+		fetchStatisticsNext();
+	//}
+
+	/*
+		$("#productRecommendationsVersion"></td>
+                $("#productRecommendationsAccuracy"></td>
+                $("#productRecommendationsDataSet"></td>
+
+$.ajax({
+		url: apiBaseUrl + '/profiles/testProductRecommendationStatistics',
+		jsonpCallback: "productRecommendationStatistics",
+		dataType: "jsonp"
+	});*/
+}
+function productRecommendationStatistics(data){
+	alert(JSON.stringify(data));
+}
+
 function nextProfiles(){
 	if ( currentVideo == null )
 		fetchProfileProducts();
@@ -113,7 +210,6 @@ function nextProfiles(){
 		fetchProfileVideos();
 }
 function setProfilesMatch() {
-
 	var otherProfiles = currentProfiles.slice(0);
 
 	var correct = $('#selectOtherProfileId').val();
@@ -213,12 +309,10 @@ function renderProfiles(data) {
 		} else {
 			row += "<tr>";
 		}
-		row += "<td><a onclick='fetchViedoProfiles(" + profile.id + ", " + key+ ")' class='tvp-link'>" + profile.name + "</a></td>"
+		row += "<td><a onclick='fetchViedoProfiles(" + profile.id + ", " + key+ ")' class='tvp-link'>" + profile.id + '. ' + profile.name + "</a></td>"
 		row += "<td>" + profile.version + "</td>"
-		row += "<td></td>"
-		row += "<td></td>"
-		row += "<td></td>"
-		row += "<td></td>"
+		row += "<td id='profileAccuracy_" + profile.id + "'></td>"
+		row += "<td id='profileDataSet_" + profile.id + "'></td>"
 		row += "</tr>";
 		$tableBody.append(row);
 
@@ -306,7 +400,7 @@ function renderVideoProfilesView(data) {
 
 function renderProfileView(video) {
 	$('.tvp-button').removeAttr('disabled');
-	$("#VideoTitle").html(video.title);
+	$("#VideoTitle").html(video.id + ') <b>' + video.title + '</b><br>' + video.description);
 	$("#ProfileTitle").html(currentProfile.name);
 
 	$('#TVProductHolder').hide();
@@ -374,7 +468,11 @@ function renderProfileProductView(data) {
 
 
 function renderProfilesView() {
-	$("#VideoTitle").html(currentVideo == null ? currentProduct.title : currentVideo.title);
+	if ( currentVideo == null ){
+		$("#VideoTitle").html(currentProduct.id + ') <b>' + currentProduct.title + '</b><br/>' + currentProduct.description );
+	}else{
+		$("#VideoTitle").html(currentVideo.id + ') <b>' + currentVideo.title + '</b><br>' + currentVideo.description);
+	}
 
 	var $profilesGrid = $("#ProfilesGrid");
 	var pt = '';
@@ -408,7 +506,7 @@ function setProfile(index) {
 
 
 function renderProductView() {
-	$("#VideoTitle").html(currentVideo.title);
+	$("#VideoTitle").html(currentVideo.id + ')<b>' + currentVideo.title + '</b><br/>' + currentVideo.description);
 
 	var $productsGrid = $("#ProductsGrid");
 	var pt = '';
