@@ -14,6 +14,12 @@ var apiBaseUrl = '//test.tvpage.com/api';
 $( document ).ready(function() {
 	fetchProfiles();
 
+	var dlgtrigger = document.querySelector( '[data-dialog]' ),
+	somedialog = document.getElementById( dlgtrigger.getAttribute( 'data-dialog' ) ),
+	dlg = new DialogFx( somedialog );
+
+	dlgtrigger.addEventListener( 'click', dlg.toggle.bind(dlg) );
+
 	if (localStorage.getItem("username") !== null) {
 		$("#UserWelcome").html("Welcome " + localStorage.getItem("username"));
 		$("#ProfilesTable").show();
@@ -32,8 +38,11 @@ $( document ).ready(function() {
 		
 	});
 
-	$('#FalseMatch').click(function() {
-		setMatch(false);
+	$('#setCorrection').click(function() {
+		var correct = $('#correctProfileId').val();
+		correct = correct.split('-');
+		setMatch(true, correct[1], correct[2]);
+		$('#modalClose').click();
 	});
 
 	$('#TrueMatch').click(function() {
@@ -132,18 +141,25 @@ function setProductsMatch() {
 	fetchProductRecommendation();
 }
 
-function setMatch(valid) {
+function setMatch(valid, profileId, index) {
+	var version = (typeof index !== 'undefined')? profiles[index].version : currentProfile.version;
+	var pId = (typeof profileId !== 'undefined')? profileId : currentProfile.id;
+
 	$('.tvp-button').attr('disabled','disabled');
 	var data = {
-		version: currentProfile.version,
+		version: version,
 		videoId: currentVideo.id,
 		isMatch: valid,
 		user: localStorage.getItem("username"),
 		position: currentVideo._position
 	};
 
+	if (typeof profileId !== 'undefined') {
+		data.IsCorrection = true;
+	}
+
 	$.ajax({
-		url: apiBaseUrl + "/profiles/testVideoProfile/" + currentProfile.id,
+		url: apiBaseUrl + "/profiles/testVideoProfile/" + pId,
 		type: "POST",
 		crossDomain: true,
 		dataType: 'json',
@@ -162,6 +178,7 @@ function setMatch(valid) {
 function renderProfiles(data) {	
 	profiles = data;
 	var $tableBody = $('#TVP-table').find('tbody');
+	var $profileSelect = $('#correctProfileId');
 	$.each(data, function(key, profile) {
 		var row = "";
 		if (key % 2) {
@@ -177,7 +194,12 @@ function renderProfiles(data) {
 		row += "<td></td>"
 		row += "</tr>";
 		$tableBody.append(row);
+
+		var po = '<option value="profile-' + profile.id + '-' + key + '">' + profile.name + '</option>';
+		$profileSelect.append(po);
 	});
+
+	$profileSelect.select2();
 }
 
 function fetchProductRecommendation() {
@@ -242,7 +264,7 @@ function renderVideoProfilesView(data) {
 	if (typeof data.videos !== "undefined" && data.videos.length > 0) {
 		
 		videos = data.videos;
-		$('#HeaderTitle').html('Profile Recommedation Engine');
+		$('#HeaderTitle').html('Profile training');
 		$('#ProfilesTable').hide();
 
 		currentVideo = videos[0];
@@ -273,7 +295,7 @@ function renderProductRecommendationsView(data) {
 		currentVideo = data.video;
 		products = data.products;
 		profileVersion = data.profileVersion;
-		$('#HeaderTitle').html('Product Recommedation Engine');
+		$('#HeaderTitle').html('Recommedation training');
 		$('#ProfilesTable').hide();
 		$('#TVProductHolder').hide();
 		$('#TVPlayerHolder').show();

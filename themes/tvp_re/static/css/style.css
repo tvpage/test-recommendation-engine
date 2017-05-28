@@ -294,3 +294,20 @@ footer {
     -webkit-transform: scale(1.0);
   }
 }
+
+#correctProfileId {
+	width: 100%;
+	margin-bottom: 50px;
+}
+
+#somedialog {
+	z-index: 9999999;
+}
+
+.close-modal {
+	margin-top: 50px;
+}
+
+.select2-container {
+	z-index: 99999999;
+}

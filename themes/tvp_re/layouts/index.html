@@ -85,7 +85,7 @@
             <h2 id="ProfileTitle" class="tvp-profile-title">Active Lifestyle > Sports fans > Soccer enthusiasts</h2>
 
             <div class="tvp-button-group">
-                <button id="FalseMatch" class="tvp-button btn-red">No</button>
+                <button id="FalseMatch" data-dialog="somedialog"  class="tvp-button btn-red">No</button>
                 <button id="TrueMatch" class="tvp-button btn-green">Yes</button>
             </div>
         </div>
@@ -111,6 +111,19 @@
 
             <div class="tvp-button-group">
                 <button id="SudmitProfiles" class="tvp-button btn-green">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="somedialog" class="dialog">
+        <div class="dialog__overlay"></div>
+        <div class="dialog__content">
+            <h2>Select Correct Profile Match</h2>
+            <select id="correctProfileId"></select>
+            <br>
+            <div class="close-modal">
+                <button class="action" id="modalClose" data-dialog-close style="display: none;"></button>
+                <button id="setCorrection">Submit</button>
             </div>
         </div>
     </div>
