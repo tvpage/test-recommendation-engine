@@ -363,6 +363,7 @@ function renderProfileProductView(data) {
 		$('#ProfilesTable').hide();
 		$('#TVProductHolder').show();
 		$('#TVPlayerHolder').hide();
+		$('#TVProductHolder img').attr('src', '');
 		$('#TVProductHolder img').attr('src', currentProduct.imageUrl);
 		renderProfilesView();
 	} else {
