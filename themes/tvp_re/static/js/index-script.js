@@ -37,7 +37,7 @@ $( document ).ready(function() {
 		} else {
 			alert("Enter Name")
 		}
-		
+
 	});
 
 	$('#setCorrection').click(function() {
@@ -76,7 +76,7 @@ function setPlayer() {
           seekBar:{
           },
           floater:{
-          }             
+          }
         },
         'analytics': {
           tvpa: false
@@ -137,11 +137,15 @@ function renderStatisticsNext(data){
 function fetchStatisticsNext(){
 	var next = profileStatistics.shift();
 	if ( typeof(next) == 'undefined' ){
-console.log(profileStats);
-                $("#profileVideosAccuracy").text( (profileStats.video.yes + profileStats.video.no == 0 ? 'n/a' : (profileStats.video.yes / (profileStats.video.yes + profileStats.video.no) ) * 100).toFixed(2) + '%' );
-                $("#profileVideosDataSet").text( profileStats.video.yes + profileStats.video.no + profileStats.video.corrections );
-                $("#profileProductsAccuracy").text( (profileStats.product.yes + profileStats.product.no == 0 ? 'n/a' : (profileStats.product.yes / (profileStats.product.yes + profileStats.product.no) ) * 100 ).toFixed(2) + '%' );
-                $("#profileProductsDataSet").text( profileStats.product.yes + profileStats.product.no + profileStats.product.corrections );
+		var total;
+
+		total = profileStats.video.yes + profileStats.video.no;
+    $("#profileVideosAccuracy").text( total == 0 ? 'n/a' : ((profileStats.video.yes / total ) * 100).toFixed(2) + '%' );
+    $("#profileVideosDataSet").text( total + profileStats.video.corrections );
+
+		total = profileStats.product.yes + profileStats.product.no;
+    $("#profileProductsAccuracy").text( total == 0 ? 'n/a' : ((profileStats.product.yes / total ) * 100 ).toFixed(2) + '%' );
+    $("#profileProductsDataSet").text( total + profileStats.product.corrections );
 
 		return;
 	}
@@ -294,10 +298,10 @@ function setMatch(valid, profileId, index) {
 	} else {
 		fetchViedoProfiles(currentProfile.id, profiles.indexOf(currentProfile));
 	}
-	
+
 }
 
-function renderProfiles(data) {	
+function renderProfiles(data) {
 	profiles = data;
 	var $tableBody = $('#TVP-table').find('tbody');
 	var $profileSelect = $('#correctProfileId');
@@ -385,7 +389,7 @@ function renderVideoProfilesView(data) {
 	$(".spinner-overlay").hide();
 	$('.tvp-button').removeAttr('disabled');
 	if (typeof data.videos !== "undefined" && data.videos.length > 0) {
-		
+
 		videos = data.videos;
 		$('#HeaderTitle').html('Profile training');
 		$('#ProfilesTable').hide();
@@ -483,7 +487,7 @@ function renderProfilesView() {
         pt += '</div>';
         pt += '<div class="product-title">' + profile.name + '</div>';
         pt += '</div>';
-		
+
 		currentProfiles[key].isMatch = false;
 	});
 
@@ -517,7 +521,7 @@ function renderProductView() {
         pt += '</div>';
         pt += '<div class="product-title">' + product.title + '</div>';
         pt += '</div>';
-		
+
 		products[key].isMatch = false;
 	});
 
