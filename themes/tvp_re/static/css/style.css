@@ -296,6 +296,11 @@ footer {
 }
 
 #correctProfileId {
+	width: 240px;
+	margin-bottom: 50px;
+}
+
+#selectOtherProfileId {
 	width: 100%;
 	margin-bottom: 50px;
 }

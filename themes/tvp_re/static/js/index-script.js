@@ -113,10 +113,29 @@ function nextProfiles(){
 		fetchProfileVideos();
 }
 function setProfilesMatch() {
+
+	var otherProfiles = currentProfiles.slice(0);
+
+	var correct = $('#selectOtherProfileId').val();
+	if ( correct != '' ){
+		correct = correct.split('-');
+		var otherProfile = {
+			id: correct[1],
+			version: correct[3],
+			name: $("#selectOtherProfileId>option:selected").text(),
+			_position: 9999,
+			score: 0,
+			isMatch: true,
+			isCorrection: true
+		};
+		otherProfiles.push(otherProfile);
+		$('#selectOtherProfileId').val('').trigger("change");;
+	}
+
 	var data = {
 		videoId: currentVideo == null ? null : currentVideo.id,
 		productId: currentProduct == null ? null : currentProduct.id,
-		profiles: currentProfiles,
+		profiles: otherProfiles,
 		user: localStorage.getItem("username")
 	};
 
@@ -186,6 +205,7 @@ function renderProfiles(data) {
 	profiles = data;
 	var $tableBody = $('#TVP-table').find('tbody');
 	var $profileSelect = $('#correctProfileId');
+	var $selectOtherProfileId = $('#selectOtherProfileId');
 	$.each(data, function(key, profile) {
 		var row = "";
 		if (key % 2) {
@@ -202,11 +222,13 @@ function renderProfiles(data) {
 		row += "</tr>";
 		$tableBody.append(row);
 
-		var po = '<option value="profile-' + profile.id + '-' + key + '">' + profile.name + '</option>';
+		var po = '<option value="profile-' + profile.id + '-' + key + '-' + profile.version + '">' + profile.name + '</option>';
 		$profileSelect.append(po);
+		$selectOtherProfileId.append(po);
 	});
 
 	$profileSelect.select2();
+	$selectOtherProfileId.select2();
 }
 
 function fetchProductRecommendation() {

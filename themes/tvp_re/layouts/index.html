@@ -109,11 +109,13 @@
                 </div>
             </div>
 
-            <div class="tvp-button-group">
-                <button id="SudmitProfiles" class="tvp-button btn-green">Submit</button>
-            </div>
+	    <h2>... or Select Correct Profile Match</h2>
+	    <select id="selectOtherProfileId" style="width:480px;">
+		<option value="">-- Select other profile --</option>
+	    </select>
 
             <div class="tvp-button-group">
+                <button id="SudmitProfiles" class="tvp-button btn-green">Submit</button>
                 <button id="NextProfiles" class="tvp-button btn-yellow">Next</button>
             </div>
         </div>
@@ -123,7 +125,7 @@
         <div class="dialog__overlay"></div>
         <div class="dialog__content">
             <h2>Select Correct Profile Match</h2>
-            <select id="correctProfileId"></select>
+            <select id="correctProfileId" style="width: 240px;"></select>
             <br>
             <div class="close-modal">
                 <button class="action" id="modalClose" data-dialog-close style="display: none;"></button>
