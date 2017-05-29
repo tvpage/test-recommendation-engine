@@ -139,13 +139,44 @@ function fetchStatisticsNext(){
 	if ( typeof(next) == 'undefined' ){
 		var total;
 
+		//standard video
 		total = profileStats.video.yes + profileStats.video.no;
-    $("#profileVideosAccuracy").text( total == 0 ? 'n/a' : ((profileStats.video.yes / total ) * 100).toFixed(2) + '%' );
-    $("#profileVideosDataSet").text( total + profileStats.video.corrections );
+		var profileVideosAccuracy = total == 0 ? 'n/a' : ((profileStats.video.yes / total ) * 100).toFixed(2) + '%';
+		var profileVideosDataSet = total + profileStats.video.corrections;
 
+		//standard product
 		total = profileStats.product.yes + profileStats.product.no;
-    $("#profileProductsAccuracy").text( total == 0 ? 'n/a' : ((profileStats.product.yes / total ) * 100 ).toFixed(2) + '%' );
-    $("#profileProductsDataSet").text( total + profileStats.product.corrections );
+		var profileProductsAccuracy = total == 0 ? 'n/a' : ((profileStats.product.yes / total ) * 100 ).toFixed(2) + '%';
+		var profileProductsDataSet = total + profileStats.product.corrections;
+
+		//standard recommend
+		total = profileStats.recommend.yes + profileStats.recommend.no;
+		var profileRecommendAccuracy = total == 0 ? 'n/a' : ((profileStats.recommend.yes / total ) * 100).toFixed(2) + '%';
+		var profileRecommendDataSet = total + profileStats.recommend.corrections;
+
+		//accuracy video
+		total = profileStats.types[1].yes + profileStats.types[1].no;
+		var profileVideosAccuracyOverall = total == 0 ? 'n/a' : ((profileStats.types[1].yes / total ) * 100).toFixed(2) + '%';
+		var profileVideosDataSetOverall = total;
+
+		//accuracy product
+		total = profileStats.types[2].yes + profileStats.types[2].no;
+		var profileProductsAccuracyOverall = total == 0 ? 'n/a' : ((profileStats.types[2].yes / total ) * 100).toFixed(2) + '%';
+		var profileProductsDataSetOverall = total;
+
+		//accuracy recommend
+		total = profileStats.types[3].yes + profileStats.types[3].no;
+		var profileRecommendAccuracyOverall = total == 0 ? 'n/a' : ((profileStats.types[3].yes / total ) * 100).toFixed(2) + '%';
+		var profileRecommendDatasetOverall = total;
+
+
+    $("#profileVideosAccuracy").text( "" + profileVideosAccuracyOverall + " (overall: " + profileVideosAccuracy + ")" );
+    $("#profileVideosDataSet").text( "" + profileVideosDataSetOverall + " (overall: " + profileVideosDataSet + ")" );
+    $("#profileProductsAccuracy").text( "" + profileProductsAccuracyOverall + " (overall: " + profileProductsAccuracy + ")" );
+    $("#profileProductsDataSet").text( "" + profileProductsDataSetOverall + " (overall: " + profileProductsDataSet + ")" );
+		$("#productRecommendationsAccuracy").text("" + profileRecommendAccuracyOverall + " (overall: " + profileRecommendAccuracy + ")")
+		$("#productRecommendationsDataSet").text("" + profileRecommendDatasetOverall + " (overall: " + profileRecommendDataSet + ")")
+
 
 		return;
 	}
@@ -158,6 +189,12 @@ function fetchStatisticsNext(){
 			fetchStatisticsNext();
 		}
 	});
+}
+function renderTestAccuracyStatistics(data){
+	profileStats.types[data.testType] = data
+}
+function renderRecommendStatistics(data){
+	profileStats.recommend = data.stat.match
 }
 function fetchStatistics(){
 	if ( profiles.length == 0 ){
@@ -184,24 +221,54 @@ function fetchStatistics(){
 			yes: 0,
 			no: 0,
 			corrections: 0
+		},
+		types: {
 		}
-
 	};
 
-	//for ( var i=0;i<2;i++ ){
-		fetchStatisticsNext();
-	//}
 
-	/*
-		$("#productRecommendationsVersion"></td>
-                $("#productRecommendationsAccuracy"></td>
-                $("#productRecommendationsDataSet"></td>
+	$.ajax({
+			url: apiBaseUrl + '/profiles/testAccuracyStatistics/1',
+			jsonpCallback: "renderTestAccuracyStatistics",
+			dataType: "jsonp",
+			error: function(result, sts, err){
+				console.log("Error fetching statistics for type #1" + ". " + err + ": " + sts);
+			},
+			success: function(){
+		  	$.ajax({
+		  			url: apiBaseUrl + '/profiles/testAccuracyStatistics/2',
+		  			jsonpCallback: "renderTestAccuracyStatistics",
+		  			dataType: "jsonp",
+		  			error: function(result, sts, err){
+		  				console.log("Error fetching statistics for type #2" + ". " + err + ": " + sts);
+		  			},
+						success: function(){
+			 		  	$.ajax({
+			 		  			url: apiBaseUrl + '/profiles/testAccuracyStatistics/3',
+			 		  			jsonpCallback: "renderTestAccuracyStatistics",
+			 		  			dataType: "jsonp",
+			 		  			error: function(result, sts, err){
+			 		  				console.log("Error fetching statistics for type #3" + ". " + err + ": " + sts);
+			 		  			},
+									success: function(){
+										$.ajax({
+												url: apiBaseUrl + '/profiles/testProductRecommendationStatistics',
+												jsonpCallback: "renderRecommendStatistics",
+												dataType: "jsonp",
+												error: function(result, sts, err){
+													console.log("Error fetching statistics for type #1" + ". " + err + ": " + sts);
+												},
+												success: function(){
+													fetchStatisticsNext();
+												}
+										});
+									}
+			 		  	 });
+						}
+		  	 });
+			}
+	 });
 
-$.ajax({
-		url: apiBaseUrl + '/profiles/testProductRecommendationStatistics',
-		jsonpCallback: "productRecommendationStatistics",
-		dataType: "jsonp"
-	});*/
 }
 function productRecommendationStatistics(data){
 	alert(JSON.stringify(data));
