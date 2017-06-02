@@ -54,6 +54,9 @@ $( document ).ready(function() {
 	$('#SudmitProducts').click(function() {
 		setProductsMatch();
 	});
+	$('#SudmitProductsSkip').click(function() {
+		fetchProductRecommendation();
+	});
 
 	$('#SudmitProfiles').click(function() {
 		setProfilesMatch();
