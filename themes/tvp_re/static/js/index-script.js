@@ -302,6 +302,7 @@ function setProfilesMatch() {
 	var data = {
 		videoId: currentVideo == null ? null : currentVideo.id,
 		productId: currentProduct == null ? null : currentProduct.id,
+		loginId: currentVideo == null ? currentProduct.loginId : currentVideo.loginId,
 		profiles: otherProfiles,
 		user: localStorage.getItem("username")
 	};
@@ -311,9 +312,15 @@ function setProfilesMatch() {
 		type: "POST",
 		crossDomain: true,
 		dataType: 'json',
-		data: JSON.stringify(data)
+		data: JSON.stringify(data),
+		success: function(){
+			nextProfiles();
+		},
+		error: function(){
+			nextProfiles(); //probably comes here due to CORS
+		}
 	});
-	nextProfiles();
+
 }
 
 function setProductsMatch() {
@@ -387,7 +394,7 @@ function renderProfiles(data) {
 		row += "</tr>";
 		$tableBody.append(row);
 
-		var po = '<option value="profile-' + profile.id + '-' + key + '-' + profile.version + '">' + profile.name + '</option>';
+		var po = '<option value="profile-' + profile.id + '-' + key + '-' + profile.version + '">' + profile.name + ": &nbsp; &nbsp; &nbsp;" + profile.description + '</option>';
 		$profileSelect.append(po);
 		$selectOtherProfileId.append(po);
 	});
@@ -502,7 +509,7 @@ function renderProductRecommendationsView(data) {
 }
 
 function renderProfileVideoView(data) {
-	if (typeof data.entity !== "undefined" && typeof data.profiles !== "undefined" && data.profiles.length > 0) {
+	if (typeof data.entity !== "undefined" && typeof data.profiles !== "undefined" ) {
 		// setPlayer("TVPlayerHolderPR");
 		currentVideo = data.entity;
 		currentProduct = null;
@@ -519,7 +526,7 @@ function renderProfileVideoView(data) {
 	$(".spinner-overlay").hide();
 }
 function renderProfileProductView(data) {
-	if (typeof data.entity !== "undefined" && typeof data.profiles !== "undefined" && data.profiles.length > 0) {
+	if (typeof data.entity !== "undefined" && typeof data.profiles !== "undefined" ) {
 		// setPlayer("TVPlayerHolderPR");
 		currentVideo = null;
 		currentProduct = data.entity;
