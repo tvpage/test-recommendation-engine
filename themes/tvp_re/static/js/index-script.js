@@ -481,7 +481,6 @@ function renderVideoProfilesView(data) {
 	if (typeof data.videos !== "undefined" && data.videos.length > 0) {
 
 		videos = data.videos;
-		$('#HeaderTitle').html('Profile training');
 		$('#ProfilesTable').hide();
 
 		currentVideo = videos[0];
@@ -512,7 +511,6 @@ function renderProductRecommendationsView(data) {
 		currentVideo = data.video;
 		products = data.products;
 		profileVersion = data.profileVersion;
-		$('#HeaderTitle').html('Recommedation training');
 		$('#ProfilesTable').hide();
 		$('#TVProductHolder').hide();
 		$('#TVPlayerHolder').show();
@@ -530,7 +528,6 @@ function renderProfileVideoView(data) {
 		currentVideo = data.entity;
 		currentProduct = null;
 		currentProfiles = data.profiles;
-		$('#HeaderTitle').html('Video Profiles');
 		$('#ProfilesTable').hide();
 		$('#TVPlayerHolder').show();
 		$('#TVProductHolder').hide();
@@ -547,7 +544,6 @@ function renderProfileProductView(data) {
 		currentVideo = null;
 		currentProduct = data.entity;
 		currentProfiles = data.profiles;
-		$('#HeaderTitle').html('Product Profiles');
 		$('#ProfilesTable').hide();
 		$('#TVProductHolder').show();
 		$('#TVPlayerHolder').hide();
