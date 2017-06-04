@@ -22,11 +22,20 @@ $( document ).ready(function() {
 
 	dlgtrigger.addEventListener( 'click', dlg.toggle.bind(dlg) );
 
+	$("#loginId").val(localStorage.getItem("loginId"));
+	$("#loginId").change(function() {
+		var loginId = $("#loginId").val().trim();
+		localStorage.setItem("loginId", loginId);
+		refreshWelcome();
+	});
+
 	function refreshWelcome(){
 		var loginId = $("#loginId").val().trim();
 		var msg = "Welcome " + localStorage.getItem("username");
 		if ( loginId != "" )
 			msg += ". Working on login #" + loginId;
+		else
+			msg += ". Working on all accounts";
 		$("#UserWelcome").html(msg);
 	}
 	if (localStorage.getItem("username") !== null) {
@@ -43,14 +52,6 @@ $( document ).ready(function() {
 		} else {
 			alert("Enter Name")
 		}
-	});
-
-
-	$("#loginId").val(localStorage.getItem("loginId"));
-	$("#loginId").change(function() {
-		var loginId = $("#loginId").val().trim();
-		localStorage.setItem("loginId", loginId);
-		refreshWelcome();
 	});
 
 	$('#setCorrection').click(function() {
@@ -190,7 +191,7 @@ function fetchStatisticsNext(){
     $("#profileVideosDataSet").text( "" + profileVideosDataSetOverall);// + " (overall: " + profileVideosDataSet + ")" );
     //$("#profileProductsAccuracy").text( "" + profileProductsAccuracyOverall + " (overall: " + profileProductsAccuracy + ")" );
     $("#profileProductsDataSet").text( "" + profileProductsDataSetOverall);// + " (overall: " + profileProductsDataSet + ")" );
-		$("#productRecommendationsAccuracy").text("Video match rate: " + profileRecommendAccuracyOverall + ", Product match rate: " + profileRecommendAccuracy + ")")
+		$("#productRecommendationsAccuracy").text("Video match rate: " + profileRecommendAccuracyOverall + ", Product match rate: " + profileRecommendAccuracy + "")
 		$("#productRecommendationsDataSet").text("Videos matched " + profileRecommendDatasetOverall + ", Products matched: " + profileRecommendDataSet + "")
 
 
@@ -220,7 +221,7 @@ function fetchStatistics(){
 
 	profileStatistics = [];
 	for ( x in profiles ){
-		profileStatistics.push(profiles[x].id);
+		//profileStatistics.push(profiles[x].id);
 	}
 	profileStats = {
 		product: {
@@ -242,9 +243,8 @@ function fetchStatistics(){
 		}
 	};
 
-
 	$.ajax({
-			url: apiBaseUrl + '/profiles/testAccuracyStatistics/1',
+			url: apiBaseUrl + '/profiles/testAccuracyStatistics/1?loginId=' + $("#loginId").val().trim(),
 			jsonpCallback: "renderTestAccuracyStatistics",
 			dataType: "jsonp",
 			error: function(result, sts, err){
@@ -252,7 +252,7 @@ function fetchStatistics(){
 			},
 			success: function(){
 		  	$.ajax({
-		  			url: apiBaseUrl + '/profiles/testAccuracyStatistics/2',
+		  			url: apiBaseUrl + '/profiles/testAccuracyStatistics/2?loginId=' + $("#loginId").val().trim(),
 		  			jsonpCallback: "renderTestAccuracyStatistics",
 		  			dataType: "jsonp",
 		  			error: function(result, sts, err){
@@ -260,7 +260,7 @@ function fetchStatistics(){
 		  			},
 						success: function(){
 			 		  	$.ajax({
-			 		  			url: apiBaseUrl + '/profiles/testAccuracyStatistics/3',
+			 		  			url: apiBaseUrl + '/profiles/testAccuracyStatistics/3?loginId=' + $("#loginId").val().trim(),
 			 		  			jsonpCallback: "renderTestAccuracyStatistics",
 			 		  			dataType: "jsonp",
 			 		  			error: function(result, sts, err){
@@ -268,7 +268,7 @@ function fetchStatistics(){
 			 		  			},
 									success: function(){
 										$.ajax({
-												url: apiBaseUrl + '/profiles/testProductRecommendationStatistics',
+												url: apiBaseUrl + '/profiles/testProductRecommendationStatistics?loginId=' + $("#loginId").val().trim(),
 												jsonpCallback: "renderRecommendStatistics",
 												dataType: "jsonp",
 												error: function(result, sts, err){
@@ -403,7 +403,7 @@ function renderProfiles(data) {
 		} else {
 			row += "<tr>";
 		}
-		row += "<td><a onclick='fetchViedoProfiles(" + profile.id + ", " + key+ ")' class='tvp-link'>" + profile.id + '. ' + profile.name + "</a></td>"
+		row += "<td>" + profile.id + '. ' + profile.name + "</td>"
 		row += "<td>" + profile.version + "</td>"
 		row += "<td id='profileAccuracy_" + profile.id + "'></td>"
 		row += "<td id='profileDataSet_" + profile.id + "'></td>"
