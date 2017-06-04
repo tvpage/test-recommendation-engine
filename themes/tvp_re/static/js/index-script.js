@@ -186,12 +186,12 @@ function fetchStatisticsNext(){
 		var profileRecommendDatasetOverall = total;
 
 
-    $("#profileVideosAccuracy").text( "" + profileVideosAccuracyOverall + " (overall: " + profileVideosAccuracy + ")" );
-    $("#profileVideosDataSet").text( "" + profileVideosDataSetOverall + " (overall: " + profileVideosDataSet + ")" );
-    $("#profileProductsAccuracy").text( "" + profileProductsAccuracyOverall + " (overall: " + profileProductsAccuracy + ")" );
-    $("#profileProductsDataSet").text( "" + profileProductsDataSetOverall + " (overall: " + profileProductsDataSet + ")" );
-		$("#productRecommendationsAccuracy").text("" + profileRecommendAccuracyOverall + " (overall: " + profileRecommendAccuracy + ")")
-		$("#productRecommendationsDataSet").text("" + profileRecommendDatasetOverall + " (overall: " + profileRecommendDataSet + ")")
+    //$("#profileVideosAccuracy").text( "" + profileVideosAccuracyOverall + " (overall: " + profileVideosAccuracy + ")" );
+    $("#profileVideosDataSet").text( "" + profileVideosDataSetOverall);// + " (overall: " + profileVideosDataSet + ")" );
+    //$("#profileProductsAccuracy").text( "" + profileProductsAccuracyOverall + " (overall: " + profileProductsAccuracy + ")" );
+    $("#profileProductsDataSet").text( "" + profileProductsDataSetOverall);// + " (overall: " + profileProductsDataSet + ")" );
+		$("#productRecommendationsAccuracy").text("Video match rate: " + profileRecommendAccuracyOverall + ", Product match rate: " + profileRecommendAccuracy + ")")
+		$("#productRecommendationsDataSet").text("Videos matched " + profileRecommendDatasetOverall + ", Products matched: " + profileRecommendDataSet + "")
 
 
 		return;
