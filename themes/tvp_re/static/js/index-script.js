@@ -22,11 +22,17 @@ $( document ).ready(function() {
 
 	dlgtrigger.addEventListener( 'click', dlg.toggle.bind(dlg) );
 
+	function refreshWelcome(){
+		var loginId = $("#loginId").val().trim();
+		var msg = "Welcome " + localStorage.getItem("username");
+		if ( loginId != "" )
+			msg += ". Working on login #" + loginId;
+		$("#UserWelcome").html(msg);
+	}
 	if (localStorage.getItem("username") !== null) {
-		$("#UserWelcome").html("Welcome " + localStorage.getItem("username"));
 		$("#ProfilesTable").show();
 		$("#NameField").hide();
-
+		refreshWelcome();
 	}
 
 	$("#SetName").click(function() {
@@ -37,7 +43,14 @@ $( document ).ready(function() {
 		} else {
 			alert("Enter Name")
 		}
+	});
 
+
+	$("#loginId").val(localStorage.getItem("loginId"));
+	$("#loginId").change(function() {
+		var loginId = $("#loginId").val().trim();
+		localStorage.setItem("loginId", loginId);
+		refreshWelcome();
 	});
 
 	$('#setCorrection').click(function() {
@@ -409,7 +422,7 @@ function renderProfiles(data) {
 function fetchProductRecommendation() {
 	$(".spinner-overlay").show();
 	$.ajax({
-		url: apiBaseUrl + "/profiles/testProductRecommendation",
+		url: apiBaseUrl + "/profiles/testProductRecommendation?loginId=" + $("#loginId").val().trim(),
 		jsonpCallback: "renderProductRecommendationsView",
 		dataType: "jsonp",
 		error: function(){
@@ -423,7 +436,7 @@ function fetchProductRecommendation() {
 function fetchProfileVideos() {
 	$(".spinner-overlay").show();
 	$.ajax({
-		url: apiBaseUrl + "/profiles/testProfileVideos",
+		url: apiBaseUrl + "/profiles/testProfileVideos?loginId=" + $("#loginId").val().trim(),
 		jsonpCallback: "renderProfileVideoView",
 		dataType: "jsonp",
 		error: function(){

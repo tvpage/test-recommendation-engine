@@ -167,6 +167,11 @@ footer {
 	margin-bottom: 30px;
 }
 
+.loginId-field {
+	margin-top: 30px;
+    margin-left: 60px
+}
+
 #UserWelcome {
 	font-weight: 300;
 }
