@@ -594,7 +594,7 @@ function renderProductView() {
 	$.each(products, function(key, product) {
 		pt += '<div class="pure-u-1-4">';
         pt += '<div class="product-img-thumb-wrapper ">';
-        pt += '<div id="productId-' + product.id + '" onclick="setProduct(' + key + ')" class="product-img-thumb" style="background-image: url(' + product.imageUrl + ');"></div>';
+        pt += '<div id="productId-' + product.id + '" onclick="setProduct(' + key + ')" class="product-img-thumb tooltip" style="background-image: url(' + product.imageUrl + ');"><div class="tooltiptext">' + product.description + '</div></div>';
         pt += '</div>';
         pt += '<div class="product-title">' + product.title + '</div>';
         pt += '</div>';
