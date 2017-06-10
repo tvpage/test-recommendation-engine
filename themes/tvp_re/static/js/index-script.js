@@ -191,8 +191,9 @@ function fetchStatisticsNext(){
     $("#profileVideosDataSet").text( "" + profileVideosDataSetOverall);// + " (overall: " + profileVideosDataSet + ")" );
     //$("#profileProductsAccuracy").text( "" + profileProductsAccuracyOverall + " (overall: " + profileProductsAccuracy + ")" );
     $("#profileProductsDataSet").text( "" + profileProductsDataSetOverall);// + " (overall: " + profileProductsDataSet + ")" );
-		$("#productRecommendationsAccuracy").text("Video match rate: " + profileRecommendAccuracyOverall + ", Product match rate: " + profileRecommendAccuracy + "")
-		$("#productRecommendationsDataSet").text("Videos matched " + profileRecommendDatasetOverall + ", Products matched: " + profileRecommendDataSet + "")
+		//$("#productRecommendationsAccuracy").text("Video match rate: " + profileRecommendAccuracyOverall + ", Product match rate: " + profileRecommendAccuracy + "");
+		$("#productRecommendationsAccuracy").text("Video exact match rate: " + profileRecommendAccuracyOverall);
+		$("#productRecommendationsDataSet").text("Videos matched " + profileRecommendDatasetOverall + ", Products matched: " + profileRecommendDataSet + "");
 
 
 		return;
