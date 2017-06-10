@@ -188,9 +188,9 @@ function fetchStatisticsNext(){
 
 
     //$("#profileVideosAccuracy").text( "" + profileVideosAccuracyOverall + " (overall: " + profileVideosAccuracy + ")" );
-    $("#profileVideosDataSet").text( "" + profileVideosDataSetOverall + ". (" + (profileStats.types[1].matched / profileStats.types[1].total * 100).toFixed(2) + "% total coverage)" );// + " (overall: " + profileVideosDataSet + ")" );
+    $("#profileVideosDataSet").text( "" + profileVideosDataSetOverall + " inputs. (" + (profileStats.types[1].matched / profileStats.types[1].total * 100).toFixed(2) + "% total coverage - " + profileStats.types[1].matched + "/" + profileStats.types[1].total + ")" );// + " (overall: " + profileVideosDataSet + ")" );
     //$("#profileProductsAccuracy").text( "" + profileProductsAccuracyOverall + " (overall: " + profileProductsAccuracy + ")" );
-    $("#profileProductsDataSet").text( "" + profileProductsDataSetOverall + ". (" + (profileStats.types[2].matched / profileStats.types[2].total * 100).toFixed(2) + "% total coverage)");// + " (overall: " + profileProductsDataSet + ")" );
+    $("#profileProductsDataSet").text( "" + profileProductsDataSetOverall + " inputs. (" + (profileStats.types[2].matched / profileStats.types[2].total * 100).toFixed(2) + "% total coverage - " + profileStats.types[2].matched + "/" + profileStats.types[2].total + ")");// + " (overall: " + profileProductsDataSet + ":)" );
 		//$("#productRecommendationsAccuracy").text("Video match rate: " + profileRecommendAccuracyOverall + ", Product match rate: " + profileRecommendAccuracy + "");
 		$("#productRecommendationsAccuracy").text("Video exact match rate: " + profileRecommendAccuracyOverall);
 		$("#productRecommendationsDataSet").text("Videos matched " + profileRecommendDatasetOverall + ", Products matched: " + profileRecommendDataSet + "");
