@@ -193,7 +193,7 @@ function fetchStatisticsNext(){
     $("#profileProductsDataSet").text( "" + profileProductsDataSetOverall + " inputs. (" + (profileStats.types[2].matched / profileStats.types[2].total * 100).toFixed(2) + "% total coverage - " + profileStats.types[2].matched + "/" + profileStats.types[2].total + ")");// + " (overall: " + profileProductsDataSet + ":)" );
 		//$("#productRecommendationsAccuracy").text("Video match rate: " + profileRecommendAccuracyOverall + ", Product match rate: " + profileRecommendAccuracy + "");
 		$("#productRecommendationsAccuracy").text("Video exact match rate: " + profileRecommendAccuracyOverall);
-		$("#productRecommendationsDataSet").text("Videos matched " + profileRecommendDatasetOverall + ", Products matched: " + profileRecommendDataSet + "");
+		$("#productRecommendationsDataSet").text("Videos matched " + profileRecommendDatasetOverall);// + ", Products matched: " + profileRecommendDataSet + "");
 
 
 		return;
