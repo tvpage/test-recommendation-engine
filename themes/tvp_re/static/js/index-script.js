@@ -9,7 +9,7 @@ var selectedProducts = [];
 var profileVersion = '';
 var player = null
 var playerDivId = '';
-var apiBaseUrl = '//test.tvpage.com/api';
+var apiBaseUrl = '//beta.tvpage.com/api';
 var profileStatistics = [];
 var profileStats;
 
@@ -199,7 +199,7 @@ function fetchStatisticsNext(){
 		return;
 	}
 	$.ajax({
-		url: apiBaseUrl + '/profiles/testProfileStatistics/' + next,
+		url: apiBaseUrl + '/profilestest/profileStatistics/' + next,
 		jsonpCallback: "renderStatisticsNext",
 		dataType: "jsonp",
 		error: function(result, sts, err){
@@ -245,7 +245,7 @@ function fetchStatistics(){
 	};
 
 	$.ajax({
-			url: apiBaseUrl + '/profiles/testAccuracyStatistics/1?loginId=' + $("#loginId").val().trim(),
+			url: apiBaseUrl + '/profilestest/accuracyStatistics/1?loginId=' + $("#loginId").val().trim(),
 			jsonpCallback: "renderTestAccuracyStatistics",
 			dataType: "jsonp",
 			error: function(result, sts, err){
@@ -253,7 +253,7 @@ function fetchStatistics(){
 			},
 			success: function(){
 		  	$.ajax({
-		  			url: apiBaseUrl + '/profiles/testAccuracyStatistics/2?loginId=' + $("#loginId").val().trim(),
+		  			url: apiBaseUrl + '/profilestest/accuracyStatistics/2?loginId=' + $("#loginId").val().trim(),
 		  			jsonpCallback: "renderTestAccuracyStatistics",
 		  			dataType: "jsonp",
 		  			error: function(result, sts, err){
@@ -261,7 +261,7 @@ function fetchStatistics(){
 		  			},
 						success: function(){
 			 		  	$.ajax({
-			 		  			url: apiBaseUrl + '/profiles/testAccuracyStatistics/3?loginId=' + $("#loginId").val().trim(),
+			 		  			url: apiBaseUrl + '/profilestest/accuracyStatistics/3?loginId=' + $("#loginId").val().trim(),
 			 		  			jsonpCallback: "renderTestAccuracyStatistics",
 			 		  			dataType: "jsonp",
 			 		  			error: function(result, sts, err){
@@ -269,7 +269,7 @@ function fetchStatistics(){
 			 		  			},
 									success: function(){
 										$.ajax({
-												url: apiBaseUrl + '/profiles/testProductRecommendationStatistics?loginId=' + $("#loginId").val().trim(),
+												url: apiBaseUrl + '/profilestest/productRecommendationStatistics?loginId=' + $("#loginId").val().trim(),
 												jsonpCallback: "renderRecommendStatistics",
 												dataType: "jsonp",
 												error: function(result, sts, err){
@@ -325,7 +325,7 @@ function setProfilesMatch() {
 	};
 
 	$.ajax({
-		url: apiBaseUrl + "/profiles/testVideoProfiles",
+		url: apiBaseUrl + "/profilestest/videoProfiles",
 		type: "POST",
 		crossDomain: true,
 		dataType: 'json',
@@ -349,7 +349,7 @@ function setProductsMatch() {
 	};
 
 	$.ajax({
-		url: apiBaseUrl + "/profiles/testProductRecommendation",
+		url: apiBaseUrl + "/profilestest/productRecommendation",
 		type: "POST",
 		crossDomain: true,
 		dataType: 'json',
@@ -376,7 +376,7 @@ function setMatch(valid, profileId, index) {
 	}
 
 	$.ajax({
-		url: apiBaseUrl + "/profiles/testVideoProfile/" + pId,
+		url: apiBaseUrl + "/profilestest/videoProfile/" + pId,
 		type: "POST",
 		crossDomain: true,
 		dataType: 'json',
@@ -423,7 +423,7 @@ function renderProfiles(data) {
 function fetchProductRecommendation() {
 	$(".spinner-overlay").show();
 	$.ajax({
-		url: apiBaseUrl + "/profiles/testProductRecommendation?loginId=" + $("#loginId").val().trim(),
+		url: apiBaseUrl + "/profilestest/productRecommendation?loginId=" + $("#loginId").val().trim(),
 		jsonpCallback: "renderProductRecommendationsView",
 		dataType: "jsonp",
 		error: function(){
@@ -437,7 +437,7 @@ function fetchProductRecommendation() {
 function fetchProfileVideos() {
 	$(".spinner-overlay").show();
 	$.ajax({
-		url: apiBaseUrl + "/profiles/testProfileVideos?loginId=" + $("#loginId").val().trim(),
+		url: apiBaseUrl + "/profilestest/profileVideos?loginId=" + $("#loginId").val().trim(),
 		jsonpCallback: "renderProfileVideoView",
 		dataType: "jsonp",
 		error: function(){
@@ -450,7 +450,7 @@ function fetchProfileVideos() {
 function fetchProfileProducts() {
 	$(".spinner-overlay").show();
 	$.ajax({
-		url: apiBaseUrl + "/profiles/testProfileProducts",
+		url: apiBaseUrl + "/profilestest/profileProducts",
 		jsonpCallback: "renderProfileProductView",
 		dataType: "jsonp",
 		error: function(){
@@ -465,7 +465,7 @@ function fetchViedoProfiles(id, index) {
 	currentProfile = profiles[index];
 	$(".spinner-overlay").show();
 	$.ajax({
-		url: apiBaseUrl + '/profiles/testVideoProfile/' + id,
+		url: apiBaseUrl + '/profilestest/videoProfile/' + id,
 		jsonpCallback: "renderVideoProfilesView",
 		dataType: "jsonp",
 		error: function(){
