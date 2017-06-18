@@ -450,7 +450,7 @@ function fetchProfileVideos() {
 function fetchProfileProducts() {
 	$(".spinner-overlay").show();
 	$.ajax({
-		url: apiBaseUrl + "/profilestest/profileProducts",
+		url: apiBaseUrl + "/profilestest/profileProducts?loginId=" + $("#loginId").val().trim(),
 		jsonpCallback: "renderProfileProductView",
 		dataType: "jsonp",
 		error: function(){
