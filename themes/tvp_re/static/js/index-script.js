@@ -1,4 +1,3 @@
-var videos = [];
 var currentVideo = null;
 var currentProduct = null;
 var currentProfiles = [];
@@ -63,6 +62,9 @@ $( document ).ready(function() {
 
 	$('#TrueMatch').click(function() {
 		setMatch(true);
+	});
+	$('#SkipMatch').click(function() {
+		fetchProfileSuggestions(currentProfile.id, (currentVideo.entityType == 1 ? 'video' : 'product'));
 	});
 
 	$('#SudmitProducts').click(function() {
@@ -376,20 +378,14 @@ function setMatch(valid, profileId, index) {
 	}
 
 	$.ajax({
-		url: apiBaseUrl + "/profilestest/videoProfile/" + pId,
+		url: apiBaseUrl + "/profilestest/videoProfile/" + pId + "&loginId=" + $("#loginId").val().trim(),
 		type: "POST",
 		crossDomain: true,
 		dataType: 'json',
 		data: JSON.stringify(data)
 	});
 
-	currentVideo = videos[videos.indexOf(currentVideo) + 1];
-	if (typeof currentVideo !== "undefined") {
-		renderProfileView(currentVideo);
-	} else {
-		fetchViedoProfiles(currentProfile.id, profiles.indexOf(currentProfile));
-	}
-
+	fetchProfileSuggestions(currentProfile.id, (currentVideo.entityType == 1 ? 'video' : 'product'));
 }
 
 function renderProfiles(data) {
@@ -404,7 +400,7 @@ function renderProfiles(data) {
 		} else {
 			row += "<tr>";
 		}
-		row += "<td>" + profile.id + '. ' + profile.name + "</td>"
+		row += "<td>" + profile.id + '. ' + profile.name + " <a onclick='fetchProfileSuggestions(" + profile.id + ", \"video\")' class='tvp-link'>[video]</a> <a onclick='fetchProfileSuggestions(" + profile.id + ", \"product\")' class='tvp-link'>[product]</a></td>"
 		row += "<td>" + profile.version + "</td>"
 		row += "<td id='profileAccuracy_" + profile.id + "'></td>"
 		row += "<td id='profileDataSet_" + profile.id + "'></td>"
@@ -427,7 +423,7 @@ function fetchProductRecommendation() {
 		jsonpCallback: "renderProductRecommendationsView",
 		dataType: "jsonp",
 		error: function(){
-			alert ("There's no Videos");
+			alert ("Error loading data");
 			window.location.reload();
 			$(".spinner-overlay").hide();
 		}
@@ -441,7 +437,7 @@ function fetchProfileVideos() {
 		jsonpCallback: "renderProfileVideoView",
 		dataType: "jsonp",
 		error: function(){
-			alert ("There's no Videos");
+			alert ("Error loading data");
 			window.location.reload();
 			$(".spinner-overlay").hide();
 		}
@@ -454,40 +450,39 @@ function fetchProfileProducts() {
 		jsonpCallback: "renderProfileProductView",
 		dataType: "jsonp",
 		error: function(){
-			alert ("There's no Videos");
+			alert ("Error loading data");
 			window.location.reload();
 			$(".spinner-overlay").hide();
 		}
 	});
 }
 
-function fetchViedoProfiles(id, index) {
-	currentProfile = profiles[index];
+function fetchProfileSuggestions(id, type) {
+	currentProfile = profiles[id];
 	$(".spinner-overlay").show();
 	$.ajax({
-		url: apiBaseUrl + '/profilestest/videoProfile/' + id,
-		jsonpCallback: "renderVideoProfilesView",
+		url: apiBaseUrl + '/profilestest/profile' + (type=='video' ? 'Videos' : 'Products') + '?loginId=' + $("#loginId").val().trim() + '&profileId=' + id,
+		jsonpCallback: "renderProfileSuggestionsView",
 		dataType: "jsonp",
-		error: function(){
-			alert ("There's no Videos");
+		error: function(a,b,c){
+			alert ("Error loading data");
 			window.location.reload();
 			$(".spinner-overlay").hide();
 		}
 	});
 }
 
-function renderVideoProfilesView(data) {
+function renderProfileSuggestionsView(data) {
 	$(".spinner-overlay").hide();
 	$('.tvp-button').removeAttr('disabled');
-	if (typeof data.videos !== "undefined" && data.videos.length > 0) {
+	if (typeof data.entity !== "undefined" ) {
 
-		videos = data.videos;
 		$('#ProfilesTable').hide();
 
-		currentVideo = videos[0];
+		currentVideo = data.entity;
 		renderProfileView(currentVideo);
 	} else {
-		alert ("There's no Videos");
+		alert ("No entity returned");
 		window.location.reload();
 	}
 }
@@ -497,9 +492,17 @@ function renderProfileView(video) {
 	$("#VideoTitle").html(video.id + ') <b>' + video.title + '</b><br>' + video.description);
 	$("#ProfileTitle").html(currentProfile.name);
 
-	$('#TVProductHolder').hide();
-	$('#TVPlayerHolder').show();
-	player.loadVideo(createAsset(video));
+	if ( video.entityType == 1 ){
+		$('#TVProductHolder').hide();
+		$('#TVPlayerHolder').show();
+		player.loadVideo(createAsset(video));
+	}else{
+		$('#TVProductHolder').show();
+		$('#TVPlayerHolder').hide();
+
+		$('#TVProductHolder img').attr('src', '');
+		$('#TVProductHolder img').attr('src', video.imageUrl);
+	}
 
 	$("#SelectionView").show();
 	$('#VideoProfileView').show();
