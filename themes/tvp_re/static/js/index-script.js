@@ -321,7 +321,7 @@ function setProfilesMatch() {
 	var data = {
 		videoId: currentVideo == null ? null : currentVideo.id,
 		productId: currentProduct == null ? null : currentProduct.id,
-		loginId: (currentVideo == null ? currentProduct.loginId : (currentVideo == null ? $("#loginId").val().trim() : currentVideo.loginId)),
+		loginId: (currentVideo == null ? (currentProduct == null ? $("#loginId").val().trim() : currentProduct.loginId)),
 		profiles: otherProfiles,
 		user: localStorage.getItem("username")
 	};
