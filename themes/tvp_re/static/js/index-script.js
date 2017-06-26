@@ -378,7 +378,7 @@ function setMatch(valid, profileId, index) {
 	}
 
 	$.ajax({
-		url: apiBaseUrl + "/profilestest/videoProfile/" + pId + "&loginId=" + $("#loginId").val().trim(),
+		url: apiBaseUrl + "/profilestest/videoProfile/" + pId + "?loginId=" + $("#loginId").val().trim(),
 		type: "POST",
 		crossDomain: true,
 		dataType: 'json',
