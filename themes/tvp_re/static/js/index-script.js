@@ -367,14 +367,26 @@ function setMatch(valid, profileId, index) {
 	$('.tvp-button').attr('disabled','disabled');
 	var data = {
 		version: version,
-		videoId: currentVideo.id,
 		isMatch: valid,
 		user: localStorage.getItem("username"),
-		position: currentVideo._position
+		position: 0
 	};
+	data.title = currentVideo.title;
+	data.description = currentVideo.description;
+
+	if ( currentVideo.entityType == 1 ){
+		data.videoId = currentVideo.id;
+		data.loginId = currentVideo.loginId;
+		data.title = currentVideo.title;
+	}
+	if ( currentVideo.entityType == 4 ){
+		data.productId = currentVideo.id;
+		data.loginId = currentVideo.loginId;
+
+	}
 
 	if (typeof profileId !== 'undefined') {
-		data.IsCorrection = true;
+		data.isCorrection = true;
 	}
 
 	$.ajax({
