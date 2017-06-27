@@ -323,7 +323,8 @@ function setProfilesMatch() {
 		productId: currentProduct == null ? null : currentProduct.id,
 		loginId: (currentVideo == null ? (currentProduct == null ? $("#loginId").val().trim() : currentProduct.loginId) : currentVideo.loginId),
 		profiles: otherProfiles,
-		user: localStorage.getItem("username")
+		user: localStorage.getItem("username"),
+		_position: 0
 	};
 
 	$.ajax({
