@@ -301,6 +301,10 @@ function nextProfiles(){
 }
 function setProfilesMatch() {
 	var otherProfiles = currentProfiles.slice(0);
+	for ( var x in otherProfiles ){
+		if ( typeof otherProfiles[x]._position == 'undefined' )
+			otherProfiles[x]._position = 0;
+	}
 
 	var correct = $('#selectOtherProfileId').val();
 	if ( correct != '' ){
@@ -323,8 +327,7 @@ function setProfilesMatch() {
 		productId: currentProduct == null ? null : currentProduct.id,
 		loginId: (currentVideo == null ? (currentProduct == null ? $("#loginId").val().trim() : currentProduct.loginId) : currentVideo.loginId),
 		profiles: otherProfiles,
-		user: localStorage.getItem("username"),
-		_position: 0
+		user: localStorage.getItem("username")
 	};
 
 	$.ajax({
