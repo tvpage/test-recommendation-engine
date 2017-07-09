@@ -416,7 +416,7 @@ function renderProfiles(data) {
 		} else {
 			row += "<tr>";
 		}
-		row += "<td>" + profile.id + '. ' + profile.name + " <a onclick='fetchProfileSuggestions(" + profile.id + ", \"video\")' class='tvp-link'>[video]</a> <a onclick='fetchProfileSuggestions(" + profile.id + ", \"product\")' class='tvp-link'>[product]</a></td>"
+		row += "<td><a onclick='fetchProfileTerms("+profile.id+")' class='tvp-link'>" + profile.id + '. ' + profile.name + "</a>&nbsp;&nbsp;&nbsp;<a onclick='fetchProfileSuggestions(" + profile.id + ", \"video\")' class='tvp-link'>[video]</a> <a onclick='fetchProfileSuggestions(" + profile.id + ", \"product\")' class='tvp-link'>[product]</a></td>"
 		row += "<td>" + profile.version + "</td>"
 		row += "<td id='profileAccuracy_" + profile.id + "'></td>"
 		row += "<td id='profileDataSet_" + profile.id + "'></td>"
@@ -430,6 +430,92 @@ function renderProfiles(data) {
 
 	$profileSelect.select2();
 	$selectOtherProfileId.select2();
+}
+
+var profileTermsSettings = {
+  page: 0,
+  limit: 100,
+  profileId: 0
+};
+
+function fetchProfileTerms(profileId, jsonpCallback){
+  profileTermsSettings.profileId=profileId;
+  
+  if (!jsonpCallback)
+    jsonpCallback="renderProfileTerms";
+  
+  
+	$.ajax({
+		url: apiBaseUrl + "/profilestest/terms/" + profileId + "?page="+profileTermsSettings.page + "&limit=" + profileTermsSettings.limit,
+		jsonpCallback: jsonpCallback,
+		dataType: "jsonp",
+		error: function(){
+			alert ("Error loading data");
+			window.location.reload();
+			$(".spinner-overlay").hide();
+		}
+	});
+  
+}
+
+
+function loadMoreTerms(){
+  profileTermsSettings.page++;
+  this.fetchProfileTerms(profileTermsSettings.profileId, "renderMoreProfileTerms");
+}
+
+
+function renderMoreProfileTerms(data){
+	var $tableBody = $('#modal-terms-table').find('tbody');
+	$.each(data, function(key, profile) {
+		var row = "";
+		if (key % 2) {
+			row += "<tr class='odd'>";
+		} else {
+			row += "<tr>";
+		}
+		row += "<td>"+ profile.term + "</td>";
+		row += "<td>" + profile.term_freq + "</td>";
+    row += "<td>" + profile.doc_freq + "</td>";
+    row += "<td>" + profile.ttf + "</td>";
+    row += "<td>" + profile.dfr + "</td>"; 
+		row += "</tr>";
+		$tableBody.append(row);
+	});
+}
+
+function renderProfileTerms(data){
+  profileTermsSettings.page=0;
+  var modal = document.getElementById('modal-terms');
+  // Get the <span> element that closes the modal
+	var $tableBody = $('#modal-terms-table').find('tbody').empty();
+	$.each(data, function(key, profile) {
+		var row = "";
+		if (key % 2) {
+			row += "<tr class='odd'>";
+		} else {
+			row += "<tr>";
+		}
+		row += "<td>"+ profile.term + "</td>";
+		row += "<td>" + profile.term_freq + "</td>";
+    row += "<td>" + profile.doc_freq + "</td>";
+    row += "<td>" + profile.ttf + "</td>";
+    row += "<td>" + profile.dfr + "</td>"; 
+		row += "</tr>";
+		$tableBody.append(row);
+	});
+  
+  modal.style.display = "block";
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+  $(document).keydown(function(e) { 
+    if (e.keyCode == 27) { ;
+      document.getElementById('modal-terms').style.display = "none";;
+    } 
+  });  
 }
 
 function fetchProductRecommendation() {

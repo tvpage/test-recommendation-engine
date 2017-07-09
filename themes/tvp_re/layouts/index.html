@@ -127,6 +127,28 @@
             </div>
         </div>
     </div>
+    <div id="modal-terms" class="modal">
+      <div id="modal-terms-content" class="modal-content">
+        <table id="modal-terms-table" class="pure-table tvp-table">
+            <thead>
+                <tr>
+                    <th>Term</th>
+                    <th>TF</th>
+                    <th>DF</th>
+                    <th>TTF</th>
+                    <th>DFR</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            </tbody>
+        </table>
+        <div id="modal-terms-loadmore">
+          <a  onclick="loadMoreTerms();" class="tvp-link">
+            Load More Terms
+          </a>          
+        </div>
+    </div>
 
     {{ partial "scripts.html" . }}
 
