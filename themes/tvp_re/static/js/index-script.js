@@ -459,6 +459,139 @@ function fetchProfileVideos() {
 		}
 	});
 }
+var negativeVideoTests = [];
+function fetchNegativeVideoTests() {
+	$(".spinner-overlay").show();
+	$.ajax({
+		url: apiBaseUrl + "/profilestest/profile/negatives/videos?loginId=" + $("#loginId").val().trim(),
+		jsonpCallback: "renderNegativeVideoTests",
+		dataType: "jsonp",
+		error: function(){
+			alert ("Error loading data");
+			window.location.reload();
+			$(".spinner-overlay").hide();
+		}
+	});
+}
+
+var correctionRunId=0;
+
+function renderNegativeVideoTests(data){
+  $(".spinner-overlay").hide();
+  negativeVideoTests = data;
+  renderNegativeVideoTest();
+}
+function renderNegativeVideoTest(){
+  var video = negativeVideoTests.shift();
+  if (typeof video !== "object")
+    return;
+  
+  correctionRunId=video.id;
+  
+  $('#ProfilesTable').hide();
+  $('#TVPlayerHolder').show();
+  $('#TVProductHolder').hide();
+  
+  var videoData = JSON.parse(video.data);
+  $.each(videoData, function (key, value) {
+    video[key]=value;
+  });
+  
+  currentVideo=video;
+  player.loadVideo(createAsset(currentVideo));
+  
+  $("#VideoTitle").html(video.entityId + ') <b>' + video.title + '</b><br>' + video.description);
+	var $profilesGrid = $("#ProfilesGrid");
+	var pt = '';
+  
+  var profileCorrect = profiles[video.profileId_correct];
+  var profileAssigned = profiles[video.profileId_assigned];
+  
+  profileCorrect.isMatch=false;
+  profileAssigned.isMatch=false;
+  
+  currentProfiles=[];
+  currentProfiles[0] = profiles[video.profileId_correct];
+  currentProfiles[1] = profiles[video.profileId_assigned];
+  
+  pt = '';
+  pt += '<div class="pure-u-1-4">';
+  pt += '<div class="product-img-thumb-wrapper ">';
+  pt += '<div id="profileId-' + profileCorrect.id + '" class="product-img-thumb" onclick="setProfile(0);" ></div>';
+  pt += '</div>';
+  pt += '<div class="product-title"><b>User: </b>' + profileCorrect.name + '</div>';
+  pt += '</div>';
+  
+  pt += '<div class="pure-u-1-4">';
+  pt += '<div class="product-img-thumb-wrapper ">';
+  pt += '<div id="profileId-' + profileAssigned.id + '" class="product-img-thumb" onclick="setProfile(1);"></div>';
+  pt += '</div>';
+  pt += '<div class="product-title"><b>System: </b>' + profileAssigned.name + '</div>';  
+  pt += '</div>';
+  
+	$profilesGrid.html(pt);
+	$("#SelectionView").show();
+  
+  $('#SudmitProfiles').off('click').on('click', function() {
+		correctProfilesMatch();
+	});
+  
+  $('#NextProfiles').off('click').on('click', function() {
+    renderNegativeVideoTest();
+	});
+  
+	$('#ProfileRecommendationView').show();
+}
+
+function correctProfilesMatch(){
+	var otherProfiles = currentProfiles.slice(0);
+	for ( var x in otherProfiles ){
+		if ( typeof otherProfiles[x]._position == 'undefined' )
+			otherProfiles[x]._position = 0;
+	}
+
+	var correct = $('#selectOtherProfileId').val();
+	if ( correct != '' ){
+		correct = correct.split('-');
+		var otherProfile = {
+			id: correct[1],
+			version: correct[3],
+			name: $("#selectOtherProfileId>option:selected").text(),
+			_position: 9999,
+			score: 0,
+			isMatch: true,
+			isCorrection: true
+		};
+		otherProfiles.push(otherProfile);
+		$('#selectOtherProfileId').val('').trigger("change");;
+	}
+
+	var data = {
+    entity: currentVideo,
+    runId: correctionRunId,
+    testId: currentVideo.testId,
+		videoId: currentVideo == null ? null : currentVideo.entityId,
+    productId: null,
+		loginId: (currentVideo == null ? (currentProduct == null ? $("#loginId").val().trim() : currentProduct.loginId) : currentVideo.loginId),
+		profiles: otherProfiles,
+		user: localStorage.getItem("username")
+	};
+
+	$.ajax({
+		url: apiBaseUrl + "/profilestest/videoProfiles/correct",
+		type: "POST",
+		crossDomain: true,
+		dataType: 'json',
+		data: JSON.stringify(data),
+		success: function(){
+			renderNegativeVideoTest();
+		},
+		error: function(){
+			renderNegativeVideoTest(); //probably comes here due to CORS
+		}
+	});
+}
+
 function fetchProfileProducts() {
 	$(".spinner-overlay").show();
 	$.ajax({
