@@ -30,7 +30,7 @@
             <tbody>
                 <tr class="odd">
                     <td>
-                        <a  onclick="fetchProductRecommendation();" class="tvp-link">
+                        <a href='{{ "tests/recommendation/product" | relURL }}' class="tvp-link">
                             Test Product Recommendations
                         </a>
                     </td>
@@ -40,7 +40,7 @@
                 </tr>
                 <tr class="even">
                     <td>
-                        <a  onclick="fetchProfileVideos();" class="tvp-link">
+                        <a href='{{ "tests/profiles/training?entity=video" | relURL }}' class="tvp-link">
                             Videos Profile Training
                         </a>
                     </td>
@@ -50,7 +50,7 @@
                 </tr>
                 <tr class="odd">
                     <td>
-                        <a  onclick="fetchProfileProducts();" class="tvp-link">
+                        <a href='{{ "tests/profiles/training?entity=product" | relURL }}' class="tvp-link">
                             Product Profile Training
                         </a>
                     </td>
@@ -79,7 +79,7 @@
 
         </div>
         <div id="TVProductHolder" class="product-holder" >
-		<img style="max-height: 480px" />
+		  <img style="max-height: 480px" />
         </div>
 
         <div id="VideoProfileView" style="display: none;">
@@ -138,10 +138,15 @@
         </div>
     </div>
 
-    {{ partial "scripts.html" . }}
+    {{ partial "footer.html" . }}
 
-
-
-    <script type="text/javascript" src='{{ "js/index-script.js" | relURL }}' ds ></script>
-
-{{ partial "footer.html" . }}
+    <script>window.SiteParams = {{ $.Site.Params }} || {};</script>
+    <script type="text/javascript" src='{{ "js/modernizr.custom.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/jquery-3.2.1.min.js" | relURL }}'></script>
+    <script type="text/javascript" src="//cdnjs.tvpage.com/tvplayer/tvp-3.1.0.min.js" ></script>
+    <script type="text/javascript" src='{{ "js/classie.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/dialogFx.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/select2.full.min.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/pages/index.js" | relURL }}'></script>
+  </body>
+</html>

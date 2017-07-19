@@ -1,5 +1,5 @@
 languageCode = "en-us"
 title = "TVPage Recommendation Engine"
-baseURL = "http://example.org/"
-theme = "tvp_re"
-relativeURLs = true
+
+[params]
+apiBaseUrl = "//local.tvpage.com/api"

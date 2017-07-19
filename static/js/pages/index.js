@@ -1,3 +1,5 @@
+var apiBaseUrl = SiteParams.apibaseurl;
+
 var currentVideo = null;
 var currentProduct = null;
 var currentProfiles = [];
@@ -8,7 +10,6 @@ var selectedProducts = [];
 var profileVersion = '';
 var player = null
 var playerDivId = '';
-var apiBaseUrl = '//beta.tvpage.com/api';
 var profileStatistics = [];
 var profileStats;
 
