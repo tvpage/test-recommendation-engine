@@ -6,7 +6,9 @@
   var entityType = null;
   var profiles = null;
   var currentEntity = null;
-  var currentEntityProfiles = null;
+  var currentProfiles = [];
+  var profileNegatives = null;
+  var player = null;
 
 
   /**
@@ -32,26 +34,27 @@
     return def.promise();
   };
 
-  var getProfileEntities = function(){
+  var getProfileNegatives = function(){
     var def = $.Deferred();
-    
-    var endPoint = app.apiBaseUrl + '/profilestest/profile';
-    if ('video' === entityType)
-      endPoint += 'Videos';
-
-    if ('product' === entityType)
-      endPoint += 'Products';
 
     $.ajax({
-      url: endPoint,
+      url: app.apiBaseUrl + "/profilestest/profile/negatives/videos",
       dataType: "jsonp",
       data: {
         loginId: app.loginId
       },
       error: app.handleError
     }).done(function(res){
-      if (app.utils.nope(res) || app.utils.nope(res.entity) || app.utils.nope(res.profiles))
+      if (app.utils.nope(res) || !res.length)
         def.resolve(false);
+
+      for (var key in res) {
+        var item = res[key];
+        var itemData = JSON.parse(item.data);
+
+        for (var dataKey in itemData)
+          item[dataKey] = itemData[dataKey];
+      }
 
       def.resolve(res);
     });
@@ -63,13 +66,17 @@
     $("#EntityDetails").html(app.utils.render("#EntityDetailsTemplate",currentEntity));
 
     if ('video' === entityType) {
-      $('#SelectionView').append( app.utils.render("#PlayerTemplate", {}) );
+      if ($('#TVPlayerHolder').length) {
+        player.play(currentEntity);
+      } else {
+        $('#SelectionView').append( app.utils.render("#PlayerTemplate", {}) );
 
-      var player = new Player('player', {
-        api_base_url: app.apiBaseUrl,
-        data: [currentEntity],
-        autoplay: true
-      });
+        player = new Player('player', {
+          api_base_url: app.apiBaseUrl,
+          data: [currentEntity],
+          autoplay: true
+        });
+      }
     }
 
     if ('product' === entityType)
@@ -77,10 +84,17 @@
   };
 
   var renderEntityProfiles = function(){
-    var html = "";
-    for (var i = 0; currentEntityProfiles.length > i; i++)
-      html += app.utils.render("#EntityProfileTemplate", currentEntityProfiles[i]);
+    var correct = currentProfiles[0];
+    correct.from = 'User';
 
+    var assigned = profiles[currentEntity.profileId_assigned];
+    assigned.from = 'System';
+
+    var html = '';
+    
+    html += app.utils.render('#EntityProfileTemplate', correct);
+    html += app.utils.render('#EntityProfileTemplate', assigned);
+    
     $("#ProfilesGrid").html(html);
   };
 
@@ -95,19 +109,34 @@
     $('#selectOtherProfileId').append(html).select2();
   };
 
+  var prepareProfileNegatives = function(){
+    currentEntity = profileNegatives.shift();
+    
+    if (!$.isPlainObject(currentEntity))
+      return;
+
+    renderEntityDetails();
+
+    var correctProfile = profiles[currentEntity.profileId_correct];
+    correctProfile.isMatch = false;
+    currentProfiles.push(correctProfile);
+
+    var assignedProfile = profiles[currentEntity.profileId_assigned];
+    assignedProfile.isMatch = false;
+    currentProfiles.push(assignedProfile);
+
+    renderEntityProfiles();
+  };
+
   
   /**
    * Interaction
    */
   $(document).on('click', '#Submit', function(){
-    var entityProfiles = currentEntityProfiles.slice(0);
-
+    var entityProfiles = currentProfiles.slice(0);
     for ( var key in entityProfiles ){
-      if ( typeof entityProfiles[key]._position == 'undefined' ){
-        var entityProfile = entityProfiles[key];
-        entityProfile._position = 0;
-        entityProfile.isMatch = app.utils.nope(entityProfile.isMatch) ? false : entityProfile.isMatch;
-      }
+      if ('undefined' === typeof entityProfiles[key]._position)
+        entityProfiles[key]._position = 0;
     }
 
     var $profileSelect = $('#selectOtherProfileId');
@@ -129,13 +158,16 @@
       $profileSelect.val('').trigger("change"); 
     }
 
+    var entityId = currentEntity.entityId;
+
     var postData = {
+      entity: currentEntity,
+      runId: entityId,
+      testId: currentEntity.testId,
       loginId: currentEntity.loginId || app.loginId,
       profiles: entityProfiles,
       user: app.user
     };
-
-    var entityId = currentEntity.entityId;
 
     if ('video' === entityType){
       postData.videoId = entityId;
@@ -148,17 +180,17 @@
     }
 
     $.ajax({
-      url: app.apiBaseUrl + "/profilestest/videoProfiles",
+      url: app.apiBaseUrl + "/profilestest/videoProfiles/correct",
       type: "post",
       crossDomain: true,
       dataType: 'json',
       data: JSON.stringify(postData),
-      error: app.handleError,
-      success: app.utils.reload
+      success: prepareProfileNegatives,
+      error: prepareProfileNegatives
     });
   });
 
-  $(document).on('click', '#Skip', app.utils.reload);
+  $(document).on('click', '#Skip', prepareProfileNegatives);
 
   
   /**
@@ -166,23 +198,21 @@
    */
 
   $("#loginId").val(app.loginId);
-
-  entityType = $.isEmptyObject(app.utils.getUrlParams()) ? "video" : app.utils.getUrlParams().entity;
   
-  $.when.apply($,[
-    
-    getProfiles(),
-    getProfileEntities()
+  entityType = $.isEmptyObject(app.utils.getUrlParams()) ? "video" : app.utils.getUrlParams().entity;
 
+  $.when.apply($,[
+
+    getProfiles(),
+    getProfileNegatives()
+    
   ]).then(function(res1, res2){
     
     profiles = res1;
-    currentEntity = res2.entity;
-    currentEntityProfiles = res2.profiles;
-    
+    profileNegatives = res2;
+
     renderProfiles();
-    renderEntityDetails();
-    renderEntityProfiles();
+    prepareProfileNegatives();
 
   });
 

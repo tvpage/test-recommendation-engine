@@ -1,14 +1,15 @@
-;(function(window){
+;(function(window){    
   
   /**
    * Properties
-   */  
+   */
   var entityType = null;
   var profiles = null;
+  var currentProfileId = null;
+  var currentProfile = null;
   var currentEntity = null;
-  var currentEntityProfiles = null;
 
-
+  
   /**
    * Methods
    */
@@ -32,7 +33,7 @@
     return def.promise();
   };
 
-  var getProfileEntities = function(){
+  var getProfileSuggestions = function(){
     var def = $.Deferred();
     
     var endPoint = app.apiBaseUrl + '/profilestest/profile';
@@ -46,11 +47,12 @@
       url: endPoint,
       dataType: "jsonp",
       data: {
-        loginId: app.loginId
+        loginId: app.loginId,
+        profileId: currentProfileId
       },
       error: app.handleError
     }).done(function(res){
-      if (app.utils.nope(res) || app.utils.nope(res.entity) || app.utils.nope(res.profiles))
+      if (app.utils.nope(res) || app.utils.nope(res.entity))
         def.resolve(false);
 
       def.resolve(res);
@@ -76,14 +78,6 @@
       $('#SelectionView').append( app.utils.render("#ProductTemplate", currentEntity) );
   };
 
-  var renderEntityProfiles = function(){
-    var html = "";
-    for (var i = 0; currentEntityProfiles.length > i; i++)
-      html += app.utils.render("#EntityProfileTemplate", currentEntityProfiles[i]);
-
-    $("#ProfilesGrid").html(html);
-  };
-
   var renderProfiles = function(){
     var html = "";
     for (var key in profiles){
@@ -92,71 +86,58 @@
       html += app.utils.render("#ProfileOptionTemplate", profile);
     }
 
-    $('#selectOtherProfileId').append(html).select2();
+    $('#CorrectProfileId').append(html).select2();
   };
 
-  
-  /**
-   * Interaction
-   */
-  $(document).on('click', '#Submit', function(){
-    var entityProfiles = currentEntityProfiles.slice(0);
+  var renderProfileDetails = function() {
+    $("#ProfileTitle").html(currentProfile.name);
+  };
 
-    for ( var key in entityProfiles ){
-      if ( typeof entityProfiles[key]._position == 'undefined' ){
-        var entityProfile = entityProfiles[key];
-        entityProfile._position = 0;
-        entityProfile.isMatch = app.utils.nope(entityProfile.isMatch) ? false : entityProfile.isMatch;
-      }
-    }
-
-    var $profileSelect = $('#selectOtherProfileId');
-
-    var selected = $profileSelect.val();
-    if (selected) {
-      selected = selected.split('-');
-
-      entityProfiles.push({
-        id: selected[1],
-        version: selected[3],
-        name: $profileSelect.find('option:selected').text(),
-        _position: 9999,
-        score: 0,
-        isMatch: true,
-        isCorrection: true
-      });
-
-      $profileSelect.val('').trigger("change"); 
-    }
-
+  var sendMatch = function(profile){
     var postData = {
-      loginId: currentEntity.loginId || app.loginId,
-      profiles: entityProfiles,
-      user: app.user
+      version: (profile || currentProfile).version,
+      isMatch: true,
+      user: app.user,
+      position: 0,
+      title: currentEntity.title,
+      description: currentEntity.description,
+      loginId: currentEntity.loginId
     };
 
-    var entityId = currentEntity.entityId;
+    postData[entityType + 'Id'] = currentEntity.id;
 
-    if ('video' === entityType){
-      postData.videoId = entityId;
-      postData.productId = null;
-    }
-
-    if ('product' === entityType) {
-      postData.productId = entityId;
-      postData.videoId = null;
-    }
+    if (profile)
+      postData.isCorrection = true;
 
     $.ajax({
-      url: app.apiBaseUrl + "/profilestest/videoProfiles",
+      url: app.apiBaseUrl + "/profilestest/videoProfile/" + (profile || currentProfile).id + "?loginId=" + app.loginId,
       type: "post",
       crossDomain: true,
       dataType: 'json',
-      data: JSON.stringify(postData),
-      error: app.handleError,
-      success: app.utils.reload
+      data: JSON.stringify(postData)
     });
+  };
+
+
+  /**
+   * Interaction
+   */
+  $(document).on('click', '#TrueMatch', function(){
+    sendMatch();
   });
+
+  $(document).on('click', '#SetCorrection', function(){
+    var correctProfile = $('#CorrectProfileId').val();
+    correctProfile = correctProfile.split('-');
+
+    sendMatch(profiles[correctProfile[1]]);
+    
+    $('#modalClose').click();
+  });
+
+  
+  var dialogFx = new DialogFx( $('#FalseMatchDialog')[0] );
+  $('#FalseMatch').on('click',dialogFx.toggle.bind(dialogFx));
 
   $(document).on('click', '#Skip', app.utils.reload);
 
@@ -166,23 +147,28 @@
    */
 
   $("#loginId").val(app.loginId);
-
-  entityType = $.isEmptyObject(app.utils.getUrlParams()) ? "video" : app.utils.getUrlParams().entity;
   
+  var urlParams = app.utils.getUrlParams();
+  if ($.isEmptyObject(urlParams))
+    return;
+
+  entityType = urlParams.entity;
+  currentProfileId = urlParams.profileId;
+
   $.when.apply($,[
     
     getProfiles(),
-    getProfileEntities()
+    getProfileSuggestions()    
 
   ]).then(function(res1, res2){
     
     profiles = res1;
     currentEntity = res2.entity;
-    currentEntityProfiles = res2.profiles;
+    currentProfile = profiles[currentProfileId];
     
     renderProfiles();
     renderEntityDetails();
-    renderEntityProfiles();
+    renderProfileDetails();
 
   });
 

@@ -3,6 +3,7 @@
 	var app = {
   	apiBaseUrl: SiteParams.apibaseurl,
     loginId: localStorage.getItem('loginId') || $('#loginId').val().trim(),
+    user: localStorage.getItem("username") || {},
   	profileVersion: null
   };
 
@@ -12,6 +13,16 @@
 
   //Utils and helpers
   app.utils = {
+    getUrlParams: function(){
+      if (!window.location) return;
+      var o = {},kv = location.search.substr(1).split('&'), params = [];
+      for (var i = 0; i < kv.length; i++) { params.push(kv[i]); }
+      for (var i = 0; i < params.length; i++) {
+          var param = params[i].split('=');
+          if(param[1]) o[param[0]] = param[1];
+      }
+      return o;
+    },
     reload: function(){
       window.location.reload();
       return false;

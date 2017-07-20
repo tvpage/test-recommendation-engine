@@ -60,7 +60,7 @@
                 </tr>
                 <tr class="even">
                     <td>
-                      <a  onclick="fetchNegativeVideoTests();" class="tvp-link">
+                      <a href='{{ "tests/profiles/correction?entity=video" | relURL }}' class="tvp-link">
                         Videos Profile Correction
                       </a>
                     </td>
@@ -72,81 +72,32 @@
         </table>
     </div>
 
-    <div id="SelectionView" class="tvp-container-center" style="display: none;">
-        <h3 id="VideoTitle" class="tvp-title"></h3>
-
-        <div id="TVPlayerHolder" class="player-holder" >
-
-        </div>
-        <div id="TVProductHolder" class="product-holder" >
-		  <img style="max-height: 480px" />
-        </div>
-
-        <div id="VideoProfileView" style="display: none;">
-            <h3 class="tvp-title">Matches Profile</h3>
-            <h2 id="ProfileTitle" class="tvp-profile-title">Active Lifestyle > Sports fans > Soccer enthusiasts</h2>
-
-            <div class="tvp-button-group">
-                <button id="FalseMatch" data-dialog="somedialog"  class="tvp-button btn-red">No</button>
-                <button id="TrueMatch" class="tvp-button btn-green">Yes</button>
-                <button id="SkipMatch" class="tvp-button btn-yellow">Skip</button>
-            </div>
-        </div>
-
-        <div id="ProductsRecommendationView" class="tvp-container-center" style="display: none;">
-            <h3 class="tvp-title">Only Select Matching Products</h3>
-            <div class="product-grid">
-                <div class="pure-g" id="ProductsGrid">
-                </div>
-            </div>
-
-            <div class="tvp-button-group">
-                <button id="SudmitProducts" class="tvp-button btn-green">Submit</button>
-                <button id="SudmitProductsSkip" class="tvp-button btn-yellow">Skip</button>
-            </div>
-        </div>
-
-        <div id="ProfileRecommendationView" class="tvp-container-center" style="display: none;">
-            <h3 class="tvp-title">Only Select Matching Profiles</h3>
-            <div class="profile-grid">
-                <div class="pure-g" id="ProfilesGrid">
-                </div>
-            </div>
-
-	    <h2>... or Select Correct Profile Match</h2>
-	    <select id="selectOtherProfileId" style="width:480px;">
-		<option value="">-- Select other profile --</option>
-	    </select>
-
-            <div class="tvp-button-group">
-                <button id="SudmitProfiles" class="tvp-button btn-green">Submit</button>
-                <button id="NextProfiles" class="tvp-button btn-yellow">Skip</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="somedialog" class="dialog">
-        <div class="dialog__overlay"></div>
-        <div class="dialog__content">
-            <h2>Select Correct Profile Match</h2>
-            <select id="correctProfileId" style="width: 240px;"></select>
-            <br>
-            <div class="close-modal">
-                <button class="action" id="modalClose" data-dialog-close style="display: none;"></button>
-                <button id="setCorrection">Submit</button>
-            </div>
-        </div>
-    </div>
-
     {{ partial "footer.html" . }}
 
-    <script>window.SiteParams = {{ $.Site.Params }} || {};</script>
+    <!-- Templates -->
+    <script id="ProfileRowTemplate" type="text/template">
+      <tr>
+        <td>{id}. {name} 
+          <a href='{{ "tests/profiles/suggestion" | relURL }}?entity=video&profileId={id}' class="tvp-link">[video]</a>
+          <a href='{{ "tests/profiles/suggestion" | relURL }}?entity=product&profileId={id}' class="tvp-link">[product]</a>
+        </td>
+        <td>{version}</td>
+        <td id="profileAccuracy_{id}"></td>
+        <td id="profileDataSet_{id}"></td>
+      </tr>
+    </script>
+    <script id="ProfileOptionTemplate" type="text/template">
+      <option value="profile-{id}-{key}-{version}">{name}: {description}</option>
+    </script>
+
     <script type="text/javascript" src='{{ "js/modernizr.custom.js" | relURL }}'></script>
     <script type="text/javascript" src='{{ "js/jquery-3.2.1.min.js" | relURL }}'></script>
     <script type="text/javascript" src="//cdnjs.tvpage.com/tvplayer/tvp-3.1.0.min.js" ></script>
     <script type="text/javascript" src='{{ "js/classie.js" | relURL }}'></script>
     <script type="text/javascript" src='{{ "js/dialogFx.js" | relURL }}'></script>
     <script type="text/javascript" src='{{ "js/select2.full.min.js" | relURL }}'></script>
+    <script type="text/javascript">window.SiteParams = {{ $.Site.Params }} || {};</script>
+    <script type="text/javascript" src='{{ "js/app.js" | relURL }}'></script>
     <script type="text/javascript" src='{{ "js/pages/index.js" | relURL }}'></script>
   </body>
 </html>

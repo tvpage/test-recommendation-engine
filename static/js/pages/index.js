@@ -1,26 +1,45 @@
-var apiBaseUrl = SiteParams.apibaseurl;
+//var currentVideo = null;
+//var currentProduct = null;
+//var currentProfiles = [];
+//var currentProfile = null;
+//var selectedProducts = [];
+//var profileVersion = '';
+//var player = null
+//var playerDivId = '';
 
-var currentVideo = null;
-var currentProduct = null;
-var currentProfiles = [];
 var profiles = [];
-var currentProfile = null;
 var products = [];
-var selectedProducts = [];
-var profileVersion = '';
-var player = null
-var playerDivId = '';
 var profileStatistics = [];
 var profileStats;
 
 $( document ).ready(function() {
-	fetchProfiles();
 
-	var dlgtrigger = document.querySelector( '[data-dialog]' ),
-	somedialog = document.getElementById( dlgtrigger.getAttribute( 'data-dialog' ) ),
-	dlg = new DialogFx( somedialog );
+	//Fetch the profiles and render them
+	$.ajax({
+		url: app.apiBaseUrl + '/profiles',
+		dataType: "jsonp",
+		error: function() {
+			$(".spinner-overlay").hide();
+		}
+	}).done(function(data){
+		profiles = data;
 
-	dlgtrigger.addEventListener( 'click', dlg.toggle.bind(dlg) );
+		var profilesHtml = "";
+		var optionsHtml = "";
+
+	    for (var key in profiles){
+	      var profile = profiles[key];
+	      profile.key = key;
+	      profile.nameEncoded = encodeURIComponent(profile.name);
+
+	      profilesHtml += app.utils.render('#ProfileRowTemplate', profile);
+	      optionsHtml += app.utils.render('#ProfileOptionTemplate', profile);
+	    }
+
+	  	$('#TVP-table').find('tbody').append(profilesHtml);
+		$('#correctProfileId').append(optionsHtml).select2();
+		$('#selectOtherProfileId').append(optionsHtml).select2();
+	});
 
 	$("#loginId").val(localStorage.getItem("loginId"));
 	$("#loginId").change(function() {
@@ -38,6 +57,7 @@ $( document ).ready(function() {
 			msg += ". Working on all accounts";
 		$("#UserWelcome").html(msg);
 	}
+
 	if (localStorage.getItem("username") !== null) {
 		$("#ProfilesTable").show();
 		$("#NameField").hide();
@@ -54,7 +74,7 @@ $( document ).ready(function() {
 		}
 	});
 
-	$('#setCorrection').click(function() {
+	/*$('#setCorrection').click(function() {
 		var correct = $('#correctProfileId').val();
 		correct = correct.split('-');
 		setMatch(true, correct[1], correct[2]);
@@ -83,49 +103,38 @@ $( document ).ready(function() {
 		nextProfiles();
 	});
 
-	setPlayer();
+	setPlayer();*/
 });
 
-function setPlayer() {
-	playerDivId = 'TVPlayerHolder';
-	player =  new TVPage.player({
-       'divId': playerDivId,
-       "apiBaseUrl": apiBaseUrl, // Only used for the transcript api call atm, allows to set the host for any api call, for e.x: '//app.tvpage.com';
-        "controls":{
-          active:true,
-          seekBar:{
-          },
-          floater:{
-          }
-        },
-        'analytics': {
-          tvpa: false
-        },
-       'onReady': function(a,b){
-          resizePlayer();
-       },
+// function setPlayer() {
+// 	playerDivId = 'TVPlayerHolder';
+// 	player =  new TVPage.player({
+//        'divId': playerDivId,
+//        "apiBaseUrl": app.apiBaseUrl, // Only used for the transcript api call atm, allows to set the host for any api call, for e.x: '//app.tvpage.com';
+//         "controls":{
+//           active:true,
+//           seekBar:{
+//           },
+//           floater:{
+//           }
+//         },
+//         'analytics': {
+//           tvpa: false
+//         },
+//        'onReady': function(a,b){
+//           resizePlayer();
+//        },
 
-       'onStateChange': function(a,b){
-          if (a == 'tvp:media:cued') {
-          	resizePlayer();
-          }
-       },
+//        'onStateChange': function(a,b){
+//           if (a == 'tvp:media:cued') {
+//           	resizePlayer();
+//           }
+//        },
 
-       'onError': function(e){
-       }
-    });
-}
-
-function fetchProfiles() {
-	$.ajax({
-		url: apiBaseUrl + '/profiles',
-		jsonpCallback: "renderProfiles",
-		dataType: "jsonp",
-		error: function() {
-			$(".spinner-overlay").hide();
-		}
-	});
-}
+//        'onError': function(e){
+//        }
+//     });
+// }
 
 function renderStatisticsNext(data){
 	var dataSet = 0;
@@ -152,8 +161,8 @@ function renderStatisticsNext(data){
 	profileStats.match.corrections += data.stat.match.corrections;
 
 	fetchStatisticsNext();
-
 }
+
 function fetchStatisticsNext(){
 	var next = profileStatistics.shift();
 	if ( typeof(next) == 'undefined' ){
@@ -202,7 +211,7 @@ function fetchStatisticsNext(){
 		return;
 	}
 	$.ajax({
-		url: apiBaseUrl + '/profilestest/profileStatistics/' + next,
+		url: app.apiBaseUrl + '/profilestest/profileStatistics/' + next,
 		jsonpCallback: "renderStatisticsNext",
 		dataType: "jsonp",
 		error: function(result, sts, err){
@@ -211,12 +220,15 @@ function fetchStatisticsNext(){
 		}
 	});
 }
+
 function renderTestAccuracyStatistics(data){
 	profileStats.types[data.testType] = data
 }
+
 function renderRecommendStatistics(data){
 	profileStats.recommend = data.stat.match
 }
+
 function fetchStatistics(){
 	if ( profiles.length == 0 ){
 		setTimeout(fetchStatistics, 1000);
@@ -248,7 +260,7 @@ function fetchStatistics(){
 	};
 
 	$.ajax({
-			url: apiBaseUrl + '/profilestest/accuracyStatistics/1?loginId=' + $("#loginId").val().trim(),
+			url: app.apiBaseUrl + '/profilestest/accuracyStatistics/1?loginId=' + $("#loginId").val().trim(),
 			jsonpCallback: "renderTestAccuracyStatistics",
 			dataType: "jsonp",
 			error: function(result, sts, err){
@@ -256,7 +268,7 @@ function fetchStatistics(){
 			},
 			success: function(){
 		  	$.ajax({
-		  			url: apiBaseUrl + '/profilestest/accuracyStatistics/2?loginId=' + $("#loginId").val().trim(),
+		  			url: app.apiBaseUrl + '/profilestest/accuracyStatistics/2?loginId=' + $("#loginId").val().trim(),
 		  			jsonpCallback: "renderTestAccuracyStatistics",
 		  			dataType: "jsonp",
 		  			error: function(result, sts, err){
@@ -264,7 +276,7 @@ function fetchStatistics(){
 		  			},
 						success: function(){
 			 		  	$.ajax({
-			 		  			url: apiBaseUrl + '/profilestest/accuracyStatistics/3?loginId=' + $("#loginId").val().trim(),
+			 		  			url: app.apiBaseUrl + '/profilestest/accuracyStatistics/3?loginId=' + $("#loginId").val().trim(),
 			 		  			jsonpCallback: "renderTestAccuracyStatistics",
 			 		  			dataType: "jsonp",
 			 		  			error: function(result, sts, err){
@@ -272,7 +284,7 @@ function fetchStatistics(){
 			 		  			},
 									success: function(){
 										$.ajax({
-												url: apiBaseUrl + '/profilestest/productRecommendationStatistics?loginId=' + $("#loginId").val().trim(),
+												url: app.apiBaseUrl + '/profilestest/productRecommendationStatistics?loginId=' + $("#loginId").val().trim(),
 												jsonpCallback: "renderRecommendStatistics",
 												dataType: "jsonp",
 												error: function(result, sts, err){
@@ -290,516 +302,490 @@ function fetchStatistics(){
 	 });
 
 }
+
 function productRecommendationStatistics(data){
 	alert(JSON.stringify(data));
 }
 
-function nextProfiles(){
-	if ( currentVideo == null )
-		fetchProfileProducts();
-	else
-		fetchProfileVideos();
-}
-function setProfilesMatch() {
-	var otherProfiles = currentProfiles.slice(0);
-	for ( var x in otherProfiles ){
-		if ( typeof otherProfiles[x]._position == 'undefined' )
-			otherProfiles[x]._position = 0;
-	}
+// function nextProfiles(){
+// 	if ( currentVideo == null )
+// 		fetchProfileProducts();
+// 	else
+// 		fetchProfileVideos();
+// }
 
-	var correct = $('#selectOtherProfileId').val();
-	if ( correct != '' ){
-		correct = correct.split('-');
-		var otherProfile = {
-			id: correct[1],
-			version: correct[3],
-			name: $("#selectOtherProfileId>option:selected").text(),
-			_position: 9999,
-			score: 0,
-			isMatch: true,
-			isCorrection: true
-		};
-		otherProfiles.push(otherProfile);
-		$('#selectOtherProfileId').val('').trigger("change");;
-	}
+// function setProfilesMatch() {
+// 	var otherProfiles = currentProfiles.slice(0);
+// 	for ( var x in otherProfiles ){
+// 		if ( typeof otherProfiles[x]._position == 'undefined' )
+// 			otherProfiles[x]._position = 0;
+// 	}
 
-	var data = {
-		videoId: currentVideo == null ? null : currentVideo.id,
-		productId: currentProduct == null ? null : currentProduct.id,
-		loginId: (currentVideo == null ? (currentProduct == null ? $("#loginId").val().trim() : currentProduct.loginId) : currentVideo.loginId),
-		profiles: otherProfiles,
-		user: localStorage.getItem("username")
-	};
+// 	var correct = $('#selectOtherProfileId').val();
+// 	if ( correct != '' ){
+// 		correct = correct.split('-');
+// 		var otherProfile = {
+// 			id: correct[1],
+// 			version: correct[3],
+// 			name: $("#selectOtherProfileId>option:selected").text(),
+// 			_position: 9999,
+// 			score: 0,
+// 			isMatch: true,
+// 			isCorrection: true
+// 		};
+// 		otherProfiles.push(otherProfile);
+// 		$('#selectOtherProfileId').val('').trigger("change");;
+// 	}
 
-	$.ajax({
-		url: apiBaseUrl + "/profilestest/videoProfiles",
-		type: "POST",
-		crossDomain: true,
-		dataType: 'json',
-		data: JSON.stringify(data),
-		success: function(){
-			nextProfiles();
-		},
-		error: function(){
-			nextProfiles(); //probably comes here due to CORS
-		}
-	});
+// 	var data = {
+// 		videoId: currentVideo == null ? null : currentVideo.id,
+// 		productId: currentProduct == null ? null : currentProduct.id,
+// 		loginId: (currentVideo == null ? (currentProduct == null ? $("#loginId").val().trim() : currentProduct.loginId) : currentVideo.loginId),
+// 		profiles: otherProfiles,
+// 		user: localStorage.getItem("username")
+// 	};
 
-}
+// 	$.ajax({
+// 		url: app.apiBaseUrl + "/profilestest/videoProfiles",
+// 		type: "POST",
+// 		crossDomain: true,
+// 		dataType: 'json',
+// 		data: JSON.stringify(data),
+// 		success: function(){
+// 			nextProfiles();
+// 		},
+// 		error: function(){
+// 			nextProfiles(); //probably comes here due to CORS
+// 		}
+// 	});
 
-function setProductsMatch() {
-	var data = {
-		version: profileVersion,
-		videoId: currentVideo.id,
-		products: products,
-		user: localStorage.getItem("username")
-	};
+// }
 
-	$.ajax({
-		url: apiBaseUrl + "/profilestest/productRecommendation",
-		type: "POST",
-		crossDomain: true,
-		dataType: 'json',
-		data: JSON.stringify(data)
-	});
-	fetchProductRecommendation();
-}
+// function setProductsMatch() {
+// 	var data = {
+// 		version: profileVersion,
+// 		videoId: currentVideo.id,
+// 		products: products,
+// 		user: localStorage.getItem("username")
+// 	};
 
-function setMatch(valid, profileId, index) {
-	var version = (typeof index !== 'undefined')? profiles[index].version : currentProfile.version;
-	var pId = (typeof profileId !== 'undefined')? profileId : currentProfile.id;
+// 	$.ajax({
+// 		url: app.apiBaseUrl + "/profilestest/productRecommendation",
+// 		type: "POST",
+// 		crossDomain: true,
+// 		dataType: 'json',
+// 		data: JSON.stringify(data)
+// 	});
+// 	fetchProductRecommendation();
+// }
 
-	$('.tvp-button').attr('disabled','disabled');
-	var data = {
-		version: version,
-		isMatch: valid,
-		user: localStorage.getItem("username"),
-		position: 0
-	};
-	data.title = currentVideo.title;
-	data.description = currentVideo.description;
+// function setMatch(valid, profileId, index) {
+// 	var version = (typeof index !== 'undefined')? profiles[index].version : currentProfile.version;
+// 	var pId = (typeof profileId !== 'undefined')? profileId : currentProfile.id;
 
-	if ( currentVideo.entityType == 1 ){
-		data.videoId = currentVideo.id;
-		data.loginId = currentVideo.loginId;
-		data.title = currentVideo.title;
-	}
-	if ( currentVideo.entityType == 4 ){
-		data.productId = currentVideo.id;
-		data.loginId = currentVideo.loginId;
+// 	$('.tvp-button').attr('disabled','disabled');
+// 	var data = {
+// 		version: version,
+// 		isMatch: valid,
+// 		user: localStorage.getItem("username"),
+// 		position: 0
+// 	};
+// 	data.title = currentVideo.title;
+// 	data.description = currentVideo.description;
 
-	}
+// 	if ( currentVideo.entityType == 1 ){
+// 		data.videoId = currentVideo.id;
+// 		data.loginId = currentVideo.loginId;
+// 		data.title = currentVideo.title;
+// 	}
+// 	if ( currentVideo.entityType == 4 ){
+// 		data.productId = currentVideo.id;
+// 		data.loginId = currentVideo.loginId;
 
-	if (typeof profileId !== 'undefined') {
-		data.isCorrection = true;
-	}
+// 	}
 
-	$.ajax({
-		url: apiBaseUrl + "/profilestest/videoProfile/" + pId + "?loginId=" + $("#loginId").val().trim(),
-		type: "POST",
-		crossDomain: true,
-		dataType: 'json',
-		data: JSON.stringify(data)
-	});
+// 	if (typeof profileId !== 'undefined') {
+// 		data.isCorrection = true;
+// 	}
 
-	fetchProfileSuggestions(currentProfile.id, (currentVideo.entityType == 1 ? 'video' : 'product'));
-}
+// 	$.ajax({
+// 		url: app.apiBaseUrl + "/profilestest/videoProfile/" + pId + "?loginId=" + $("#loginId").val().trim(),
+// 		type: "POST",
+// 		crossDomain: true,
+// 		dataType: 'json',
+// 		data: JSON.stringify(data)
+// 	});
 
-function renderProfiles(data) {
-	profiles = data;
-	var $tableBody = $('#TVP-table').find('tbody');
-	var $profileSelect = $('#correctProfileId');
-	var $selectOtherProfileId = $('#selectOtherProfileId');
-	$.each(data, function(key, profile) {
-		var row = "";
-		if (key % 2) {
-			row += "<tr class='odd'>";
-		} else {
-			row += "<tr>";
-		}
-		row += "<td>" + profile.id + '. ' + profile.name + " <a onclick='fetchProfileSuggestions(" + profile.id + ", \"video\")' class='tvp-link'>[video]</a> <a onclick='fetchProfileSuggestions(" + profile.id + ", \"product\")' class='tvp-link'>[product]</a></td>"
-		row += "<td>" + profile.version + "</td>"
-		row += "<td id='profileAccuracy_" + profile.id + "'></td>"
-		row += "<td id='profileDataSet_" + profile.id + "'></td>"
-		row += "</tr>";
-		$tableBody.append(row);
+// 	fetchProfileSuggestions(currentProfile.id, (currentVideo.entityType == 1 ? 'video' : 'product'));
+// }
 
-		var po = '<option value="profile-' + profile.id + '-' + key + '-' + profile.version + '">' + profile.name + ": &nbsp; &nbsp; &nbsp;" + profile.description + '</option>';
-		$profileSelect.append(po);
-		$selectOtherProfileId.append(po);
-	});
+// function fetchProductRecommendation() {
+// 	$(".spinner-overlay").show();
+// 	$.ajax({
+// 		url: app.apiBaseUrl + "/profilestest/productRecommendation?loginId=" + $("#loginId").val().trim(),
+// 		jsonpCallback: "renderProductRecommendationsView",
+// 		dataType: "jsonp",
+// 		error: function(){
+// 			alert ("Error loading data");
+// 			window.location.reload();
+// 			$(".spinner-overlay").hide();
+// 		}
+// 	});
+// }
 
-	$profileSelect.select2();
-	$selectOtherProfileId.select2();
-}
+// function fetchProfileVideos() {
+// 	$(".spinner-overlay").show();
+// 	$.ajax({
+// 		url: app.apiBaseUrl + "/profilestest/profileVideos?loginId=" + $("#loginId").val().trim(),
+// 		jsonpCallback: "renderProfileVideoView",
+// 		dataType: "jsonp",
+// 		error: function(){
+// 			alert ("Error loading data");
+// 			window.location.reload();
+// 			$(".spinner-overlay").hide();
+// 		}
+// 	});
+// }
 
-function fetchProductRecommendation() {
-	$(".spinner-overlay").show();
-	$.ajax({
-		url: apiBaseUrl + "/profilestest/productRecommendation?loginId=" + $("#loginId").val().trim(),
-		jsonpCallback: "renderProductRecommendationsView",
-		dataType: "jsonp",
-		error: function(){
-			alert ("Error loading data");
-			window.location.reload();
-			$(".spinner-overlay").hide();
-		}
-	});
-}
+// var negativeVideoTests = [];
+// function fetchNegativeVideoTests() {
+// 	$(".spinner-overlay").show();
+// 	$.ajax({
+// 		url: app.apiBaseUrl + "/profilestest/profile/negatives/videos?loginId=" + $("#loginId").val().trim(),
+// 		jsonpCallback: "renderNegativeVideoTests",
+// 		dataType: "jsonp",
+// 		error: function(){
+// 			alert ("Error loading data");
+// 			window.location.reload();
+// 			$(".spinner-overlay").hide();
+// 		}
+// 	});
+// }
 
-function fetchProfileVideos() {
-	$(".spinner-overlay").show();
-	$.ajax({
-		url: apiBaseUrl + "/profilestest/profileVideos?loginId=" + $("#loginId").val().trim(),
-		jsonpCallback: "renderProfileVideoView",
-		dataType: "jsonp",
-		error: function(){
-			alert ("Error loading data");
-			window.location.reload();
-			$(".spinner-overlay").hide();
-		}
-	});
-}
-var negativeVideoTests = [];
-function fetchNegativeVideoTests() {
-	$(".spinner-overlay").show();
-	$.ajax({
-		url: apiBaseUrl + "/profilestest/profile/negatives/videos?loginId=" + $("#loginId").val().trim(),
-		jsonpCallback: "renderNegativeVideoTests",
-		dataType: "jsonp",
-		error: function(){
-			alert ("Error loading data");
-			window.location.reload();
-			$(".spinner-overlay").hide();
-		}
-	});
-}
+// var correctionRunId=0;
 
-var correctionRunId=0;
+// function renderNegativeVideoTests(data){
+//   $(".spinner-overlay").hide();
+//   negativeVideoTests = data;
+//   renderNegativeVideoTest();
+// }
 
-function renderNegativeVideoTests(data){
-  $(".spinner-overlay").hide();
-  negativeVideoTests = data;
-  renderNegativeVideoTest();
-}
-function renderNegativeVideoTest(){
-  var video = negativeVideoTests.shift();
-  if (typeof video !== "object")
-    return;
+// function renderNegativeVideoTest(){
+//   var video = negativeVideoTests.shift();
+//   if (typeof video !== "object")
+//     return;
   
-  correctionRunId=video.id;
+//   correctionRunId=video.id;
   
-  $('#ProfilesTable').hide();
-  $('#TVPlayerHolder').show();
-  $('#TVProductHolder').hide();
+//   $('#ProfilesTable').hide();
+//   $('#TVPlayerHolder').show();
+//   $('#TVProductHolder').hide();
   
-  var videoData = JSON.parse(video.data);
-  $.each(videoData, function (key, value) {
-    video[key]=value;
-  });
+//   var videoData = JSON.parse(video.data);
+//   $.each(videoData, function (key, value) {
+//     video[key]=value;
+//   });
   
-  currentVideo=video;
-  player.loadVideo(createAsset(currentVideo));
+//   currentVideo=video;
+//   player.loadVideo(createAsset(currentVideo));
   
-  $("#VideoTitle").html(video.entityId + ') <b>' + video.title + '</b><br>' + video.description);
-	var $profilesGrid = $("#ProfilesGrid");
-	var pt = '';
+//   $("#VideoTitle").html(video.entityId + ') <b>' + video.title + '</b><br>' + video.description);
+// 	var $profilesGrid = $("#ProfilesGrid");
+// 	var pt = '';
   
-  var profileCorrect = profiles[video.profileId_correct];
-  var profileAssigned = profiles[video.profileId_assigned];
+//   var profileCorrect = profiles[video.profileId_correct];
+//   var profileAssigned = profiles[video.profileId_assigned];
   
-  profileCorrect.isMatch=false;
-  profileAssigned.isMatch=false;
+//   profileCorrect.isMatch=false;
+//   profileAssigned.isMatch=false;
   
-  currentProfiles=[];
-  currentProfiles[0] = profiles[video.profileId_correct];
-  currentProfiles[1] = profiles[video.profileId_assigned];
+//   currentProfiles=[];
+//   currentProfiles[0] = profiles[video.profileId_correct];
+//   currentProfiles[1] = profiles[video.profileId_assigned];
   
-  pt = '';
-  pt += '<div class="pure-u-1-4">';
-  pt += '<div class="product-img-thumb-wrapper ">';
-  pt += '<div id="profileId-' + profileCorrect.id + '" class="product-img-thumb" onclick="setProfile(0);" ></div>';
-  pt += '</div>';
-  pt += '<div class="product-title"><b>User: </b>' + profileCorrect.name + '</div>';
-  pt += '</div>';
+//   pt = '';
+//   pt += '<div class="pure-u-1-4">';
+//   pt += '<div class="product-img-thumb-wrapper ">';
+//   pt += '<div id="profileId-' + profileCorrect.id + '" class="product-img-thumb" onclick="setProfile(0);" ></div>';
+//   pt += '</div>';
+//   pt += '<div class="product-title"><b>User: </b>' + profileCorrect.name + '</div>';
+//   pt += '</div>';
   
-  pt += '<div class="pure-u-1-4">';
-  pt += '<div class="product-img-thumb-wrapper ">';
-  pt += '<div id="profileId-' + profileAssigned.id + '" class="product-img-thumb" onclick="setProfile(1);"></div>';
-  pt += '</div>';
-  pt += '<div class="product-title"><b>System: </b>' + profileAssigned.name + '</div>';  
-  pt += '</div>';
+//   pt += '<div class="pure-u-1-4">';
+//   pt += '<div class="product-img-thumb-wrapper ">';
+//   pt += '<div id="profileId-' + profileAssigned.id + '" class="product-img-thumb" onclick="setProfile(1);"></div>';
+//   pt += '</div>';
+//   pt += '<div class="product-title"><b>System: </b>' + profileAssigned.name + '</div>';  
+//   pt += '</div>';
   
-	$profilesGrid.html(pt);
-	$("#SelectionView").show();
+// 	$profilesGrid.html(pt);
+// 	$("#SelectionView").show();
   
-  $('#SudmitProfiles').off('click').on('click', function() {
-		correctProfilesMatch();
-	});
+//   $('#SudmitProfiles').off('click').on('click', function() {
+// 		correctProfilesMatch();
+// 	});
   
-  $('#NextProfiles').off('click').on('click', function() {
-    renderNegativeVideoTest();
-	});
+//   $('#NextProfiles').off('click').on('click', function() {
+//     renderNegativeVideoTest();
+// 	});
   
-	$('#ProfileRecommendationView').show();
-}
+// 	$('#ProfileRecommendationView').show();
+// }
 
-function correctProfilesMatch(){
-	var otherProfiles = currentProfiles.slice(0);
-	for ( var x in otherProfiles ){
-		if ( typeof otherProfiles[x]._position == 'undefined' )
-			otherProfiles[x]._position = 0;
-	}
+// function correctProfilesMatch(){
+// 	var otherProfiles = currentProfiles.slice(0);
+// 	for ( var x in otherProfiles ){
+// 		if ( typeof otherProfiles[x]._position == 'undefined' )
+// 			otherProfiles[x]._position = 0;
+// 	}
 
-	var correct = $('#selectOtherProfileId').val();
-	if ( correct != '' ){
-		correct = correct.split('-');
-		var otherProfile = {
-			id: correct[1],
-			version: correct[3],
-			name: $("#selectOtherProfileId>option:selected").text(),
-			_position: 9999,
-			score: 0,
-			isMatch: true,
-			isCorrection: true
-		};
-		otherProfiles.push(otherProfile);
-		$('#selectOtherProfileId').val('').trigger("change");;
-	}
+// 	var correct = $('#selectOtherProfileId').val();
+// 	if ( correct != '' ){
+// 		correct = correct.split('-');
+// 		var otherProfile = {
+// 			id: correct[1],
+// 			version: correct[3],
+// 			name: $("#selectOtherProfileId>option:selected").text(),
+// 			_position: 9999,
+// 			score: 0,
+// 			isMatch: true,
+// 			isCorrection: true
+// 		};
+// 		otherProfiles.push(otherProfile);
+// 		$('#selectOtherProfileId').val('').trigger("change");;
+// 	}
 
-	var data = {
-    entity: currentVideo,
-    runId: correctionRunId,
-    testId: currentVideo.testId,
-		videoId: currentVideo == null ? null : currentVideo.entityId,
-    productId: null,
-		loginId: (currentVideo == null ? (currentProduct == null ? $("#loginId").val().trim() : currentProduct.loginId) : currentVideo.loginId),
-		profiles: otherProfiles,
-		user: localStorage.getItem("username")
-	};
+// 	var data = {
+//     entity: currentVideo,
+//     runId: correctionRunId,
+//     testId: currentVideo.testId,
+// 		videoId: currentVideo == null ? null : currentVideo.entityId,
+//     productId: null,
+// 		loginId: (currentVideo == null ? (currentProduct == null ? $("#loginId").val().trim() : currentProduct.loginId) : currentVideo.loginId),
+// 		profiles: otherProfiles,
+// 		user: localStorage.getItem("username")
+// 	};
 
-	$.ajax({
-		url: apiBaseUrl + "/profilestest/videoProfiles/correct",
-		type: "POST",
-		crossDomain: true,
-		dataType: 'json',
-		data: JSON.stringify(data),
-		success: function(){
-			renderNegativeVideoTest();
-		},
-		error: function(){
-			renderNegativeVideoTest(); //probably comes here due to CORS
-		}
-	});
-}
+// 	$.ajax({
+// 		url: app.apiBaseUrl + "/profilestest/videoProfiles/correct",
+// 		type: "POST",
+// 		crossDomain: true,
+// 		dataType: 'json',
+// 		data: JSON.stringify(data),
+// 		success: function(){
+// 			renderNegativeVideoTest();
+// 		},
+// 		error: function(){
+// 			renderNegativeVideoTest(); //probably comes here due to CORS
+// 		}
+// 	});
+// }
 
-function fetchProfileProducts() {
-	$(".spinner-overlay").show();
-	$.ajax({
-		url: apiBaseUrl + "/profilestest/profileProducts?loginId=" + $("#loginId").val().trim(),
-		jsonpCallback: "renderProfileProductView",
-		dataType: "jsonp",
-		error: function(){
-			alert ("Error loading data");
-			window.location.reload();
-			$(".spinner-overlay").hide();
-		}
-	});
-}
+// function fetchProfileProducts() {
+// 	$(".spinner-overlay").show();
+// 	$.ajax({
+// 		url: app.apiBaseUrl + "/profilestest/profileProducts?loginId=" + $("#loginId").val().trim(),
+// 		jsonpCallback: "renderProfileProductView",
+// 		dataType: "jsonp",
+// 		error: function(){
+// 			alert ("Error loading data");
+// 			window.location.reload();
+// 			$(".spinner-overlay").hide();
+// 		}
+// 	});
+// }
 
-function fetchProfileSuggestions(id, type) {
-	currentProfile = profiles[id];
-	$(".spinner-overlay").show();
-	$.ajax({
-		url: apiBaseUrl + '/profilestest/profile' + (type=='video' ? 'Videos' : 'Products') + '?loginId=' + $("#loginId").val().trim() + '&profileId=' + id,
-		jsonpCallback: "renderProfileSuggestionsView",
-		dataType: "jsonp",
-		error: function(a,b,c){
-			alert ("Error loading data");
-			window.location.reload();
-			$(".spinner-overlay").hide();
-		}
-	});
-}
+// function fetchProfileSuggestions(id, type) {
+// 	currentProfile = profiles[id];
+// 	$(".spinner-overlay").show();
+// 	$.ajax({
+// 		url: app.apiBaseUrl + '/profilestest/profile' + (type=='video' ? 'Videos' : 'Products') + '?loginId=' + $("#loginId").val().trim() + '&profileId=' + id,
+// 		jsonpCallback: "renderProfileSuggestionsView",
+// 		dataType: "jsonp",
+// 		error: function(a,b,c){
+// 			alert ("Error loading data");
+// 			window.location.reload();
+// 			$(".spinner-overlay").hide();
+// 		}
+// 	});
+// }
 
-function renderProfileSuggestionsView(data) {
-	$(".spinner-overlay").hide();
-	$('.tvp-button').removeAttr('disabled');
-	if (typeof data.entity !== "undefined" ) {
+// function renderProfileSuggestionsView(data) {
+// 	$(".spinner-overlay").hide();
+// 	$('.tvp-button').removeAttr('disabled');
+// 	if (typeof data.entity !== "undefined" ) {
 
-		$('#ProfilesTable').hide();
+// 		$('#ProfilesTable').hide();
 
-		currentVideo = data.entity;
-		renderProfileView(currentVideo);
-	} else {
-		alert ("No entity returned");
-		window.location.reload();
-	}
-}
+// 		currentVideo = data.entity;
+// 		renderProfileView(currentVideo);
+// 	} else {
+// 		alert ("No entity returned");
+// 		window.location.reload();
+// 	}
+// }
 
-function renderProfileView(video) {
-	$('.tvp-button').removeAttr('disabled');
-	$("#VideoTitle").html(video.id + ') <b>' + video.title + '</b><br>' + video.description);
-	$("#ProfileTitle").html(currentProfile.name);
+// function renderProfileView(video) {
+// 	$('.tvp-button').removeAttr('disabled');
+// 	$("#VideoTitle").html(video.id + ') <b>' + video.title + '</b><br>' + video.description);
+// 	$("#ProfileTitle").html(currentProfile.name);
 
-	if ( video.entityType == 1 ){
-		$('#TVProductHolder').hide();
-		$('#TVPlayerHolder').show();
-		player.loadVideo(createAsset(video));
-	}else{
-		$('#TVProductHolder').show();
-		$('#TVPlayerHolder').hide();
+// 	if ( video.entityType == 1 ){
+// 		$('#TVProductHolder').hide();
+// 		$('#TVPlayerHolder').show();
+// 		player.loadVideo(createAsset(video));
+// 	}else{
+// 		$('#TVProductHolder').show();
+// 		$('#TVPlayerHolder').hide();
 
-		$('#TVProductHolder img').attr('src', '');
-		$('#TVProductHolder img').attr('src', video.imageUrl);
-	}
+// 		$('#TVProductHolder img').attr('src', '');
+// 		$('#TVProductHolder img').attr('src', video.imageUrl);
+// 	}
 
-	$("#SelectionView").show();
-	$('#VideoProfileView').show();
-}
-
-
-function renderProductRecommendationsView(data) {
-	if (typeof data.video !== "undefined" && typeof data.products !== "undefined" && data.products.length > 0) {
-		// setPlayer("TVPlayerHolderPR");
-		currentVideo = data.video;
-		products = data.products;
-		profileVersion = data.profileVersion;
-		$('#ProfilesTable').hide();
-		$('#TVProductHolder').hide();
-		$('#TVPlayerHolder').show();
-		player.loadVideo(createAsset(currentVideo));
-		renderProductView();
-	} else {
-		alert ("There's no Products");
-	}
-	$(".spinner-overlay").hide();
-}
-
-function renderProfileVideoView(data) {
-	if (typeof data.entity !== "undefined" && typeof data.profiles !== "undefined" ) {
-		// setPlayer("TVPlayerHolderPR");
-		currentVideo = data.entity;
-		currentProduct = null;
-		currentProfiles = data.profiles;
-		$('#ProfilesTable').hide();
-		$('#TVPlayerHolder').show();
-		$('#TVProductHolder').hide();
-		player.loadVideo(createAsset(currentVideo));
-		renderProfilesView();
-	} else {
-		alert ("There's no Video Suggestions");
-	}
-	$(".spinner-overlay").hide();
-}
-function renderProfileProductView(data) {
-	if (typeof data.entity !== "undefined" && typeof data.profiles !== "undefined" ) {
-		// setPlayer("TVPlayerHolderPR");
-		currentVideo = null;
-		currentProduct = data.entity;
-		currentProfiles = data.profiles;
-		$('#ProfilesTable').hide();
-		$('#TVProductHolder').show();
-		$('#TVPlayerHolder').hide();
-		$('#TVProductHolder img').attr('src', '');
-		$('#TVProductHolder img').attr('src', currentProduct.imageUrl);
-		renderProfilesView();
-	} else {
-		alert ("There's no Product Suggestions");
-	}
-	$(".spinner-overlay").hide();
-}
+// 	$("#SelectionView").show();
+// 	$('#VideoProfileView').show();
+// }
 
 
-function renderProfilesView() {
-	if ( currentVideo == null ){
-		$("#VideoTitle").html(currentProduct.id + ') <b>' + currentProduct.title + '</b><br/>' + currentProduct.description );
-	}else{
-		$("#VideoTitle").html(currentVideo.id + ') <b>' + currentVideo.title + '</b><br>' + currentVideo.description);
-	}
+// function renderProductRecommendationsView(data) {
+// 	if (typeof data.video !== "undefined" && typeof data.products !== "undefined" && data.products.length > 0) {
+// 		// setPlayer("TVPlayerHolderPR");
+// 		currentVideo = data.video;
+// 		products = data.products;
+// 		profileVersion = data.profileVersion;
+// 		$('#ProfilesTable').hide();
+// 		$('#TVProductHolder').hide();
+// 		$('#TVPlayerHolder').show();
+// 		player.loadVideo(createAsset(currentVideo));
+// 		renderProductView();
+// 	} else {
+// 		alert ("There's no Products");
+// 	}
+// 	$(".spinner-overlay").hide();
+// }
 
-	var $profilesGrid = $("#ProfilesGrid");
-	var pt = '';
-	$.each(currentProfiles, function(key, profile) {
-		pt += '<div class="pure-u-1-4">';
-        pt += '<div class="product-img-thumb-wrapper ">';
-        pt += '<div id="profileId-' + profile.id + '" onclick="setProfile(' + key + ')" class="product-img-thumb" ></div>';
-        pt += '</div>';
-        pt += '<div class="product-title">' + profile.name + '</div>';
-        pt += '</div>';
+// function renderProfileVideoView(data) {
+// 	if (typeof data.entity !== "undefined" && typeof data.profiles !== "undefined" ) {
+// 		// setPlayer("TVPlayerHolderPR");
+// 		currentVideo = data.entity;
+// 		currentProduct = null;
+// 		currentProfiles = data.profiles;
+// 		$('#ProfilesTable').hide();
+// 		$('#TVPlayerHolder').show();
+// 		$('#TVProductHolder').hide();
+// 		player.loadVideo(createAsset(currentVideo));
+// 		renderProfilesView();
+// 	} else {
+// 		alert ("There's no Video Suggestions");
+// 	}
+// 	$(".spinner-overlay").hide();
+// }
 
-		currentProfiles[key].isMatch = false;
-	});
+// function renderProfileProductView(data) {
+// 	if (typeof data.entity !== "undefined" && typeof data.profiles !== "undefined" ) {
+// 		// setPlayer("TVPlayerHolderPR");
+// 		currentVideo = null;
+// 		currentProduct = data.entity;
+// 		currentProfiles = data.profiles;
+// 		$('#ProfilesTable').hide();
+// 		$('#TVProductHolder').show();
+// 		$('#TVPlayerHolder').hide();
+// 		$('#TVProductHolder img').attr('src', '');
+// 		$('#TVProductHolder img').attr('src', currentProduct.imageUrl);
+// 		renderProfilesView();
+// 	} else {
+// 		alert ("There's no Product Suggestions");
+// 	}
+// 	$(".spinner-overlay").hide();
+// }
 
-	$profilesGrid.html(pt);
-	$("#SelectionView").show();
-	$('#ProfileRecommendationView').show();
-}
+// function renderProfilesView() {
+// 	if ( currentVideo == null ){
+// 		$("#VideoTitle").html(currentProduct.id + ') <b>' + currentProduct.title + '</b><br/>' + currentProduct.description );
+// 	}else{
+// 		$("#VideoTitle").html(currentVideo.id + ') <b>' + currentVideo.title + '</b><br>' + currentVideo.description);
+// 	}
 
-function setProfile(index) {
-	var $selected = $('#profileId-' + currentProfiles[index].id);
-	if (!$selected.parent().hasClass('active')) {
-		$selected.parent().addClass('active');
-		currentProfiles[index].isMatch = true;
+// 	var $profilesGrid = $("#ProfilesGrid");
+// 	var pt = '';
+// 	$.each(currentProfiles, function(key, profile) {
+// 		pt += '<div class="pure-u-1-4">';
+//         pt += '<div class="product-img-thumb-wrapper ">';
+//         pt += '<div id="profileId-' + profile.id + '" onclick="setProfile(' + key + ')" class="product-img-thumb" ></div>';
+//         pt += '</div>';
+//         pt += '<div class="product-title">' + profile.name + '</div>';
+//         pt += '</div>';
 
-	} else {
-		$selected.parent().removeClass('active');
-		currentProfiles[index].isMatch = false;
-	}
-}
+// 		currentProfiles[key].isMatch = false;
+// 	});
+
+// 	$profilesGrid.html(pt);
+// 	$("#SelectionView").show();
+// 	$('#ProfileRecommendationView').show();
+// }
+
+// function setProfile(index) {
+// 	var $selected = $('#profileId-' + currentProfiles[index].id);
+// 	if (!$selected.parent().hasClass('active')) {
+// 		$selected.parent().addClass('active');
+// 		currentProfiles[index].isMatch = true;
+
+// 	} else {
+// 		$selected.parent().removeClass('active');
+// 		currentProfiles[index].isMatch = false;
+// 	}
+// }
+
+// function renderProductView() {
+// 	$("#VideoTitle").html(currentVideo.id + ')<b>' + currentVideo.title + '</b><br/>' + currentVideo.description);
+
+// 	var $productsGrid = $("#ProductsGrid");
+// 	var pt = '';
+// 	$.each(products, function(key, product) {
+// 		pt += '<div class="pure-u-1-4">';
+//         pt += '<div class="product-img-thumb-wrapper ">';
+//         pt += '<div id="productId-' + product.id + '" onclick="setProduct(' + key + ')" class="product-img-thumb tooltip" style="background-image: url(' + product.imageUrl + ');"><div class="tooltiptext">' + product.description + '</div></div>';
+//         pt += '</div>';
+//         pt += '<div class="product-title">' + product.title + '</div>';
+//         pt += '</div>';
+
+// 		products[key].isMatch = false;
+// 	});
+
+// 	$productsGrid.html(pt);
+// 	$("#SelectionView").show();
+// 	$('#ProductsRecommendationView').show();
+// }
+
+// function setProduct(index) {
+// 	var $selected = $('#productId-' + products[index].id);
+// 	if (!$selected.parent().hasClass('active')) {
+// 		$selected.parent().addClass('active');
+// 		products[index].isMatch = true;
+
+// 	} else {
+// 		$selected.parent().removeClass('active');
+// 		products[index].isMatch = false;
+// 	}
+// }
+
+// function createAsset (obj){
+// 	if (!obj || "object" !== typeof obj || obj.length == 0 || typeof obj.asset == "undefined") return;
+
+//     var asset = obj.asset;
+//     asset.assetId = obj.id;
+//     asset.assetTitle = obj.title;
+//     asset.loginId = obj.loginId;
 
 
-function renderProductView() {
-	$("#VideoTitle").html(currentVideo.id + ')<b>' + currentVideo.title + '</b><br/>' + currentVideo.description);
+//     if (!asset.sources) asset.sources = [{ file: asset.videoId }];
+//    	asset.type = asset.type || 'youtube';
 
-	var $productsGrid = $("#ProductsGrid");
-	var pt = '';
-	$.each(products, function(key, product) {
-		pt += '<div class="pure-u-1-4">';
-        pt += '<div class="product-img-thumb-wrapper ">';
-        pt += '<div id="productId-' + product.id + '" onclick="setProduct(' + key + ')" class="product-img-thumb tooltip" style="background-image: url(' + product.imageUrl + ');"><div class="tooltiptext">' + product.description + '</div></div>';
-        pt += '</div>';
-        pt += '<div class="product-title">' + product.title + '</div>';
-        pt += '</div>';
-
-		products[key].isMatch = false;
-	});
-
-	$productsGrid.html(pt);
-	$("#SelectionView").show();
-	$('#ProductsRecommendationView').show();
-}
-
-function setProduct(index) {
-	var $selected = $('#productId-' + products[index].id);
-	if (!$selected.parent().hasClass('active')) {
-		$selected.parent().addClass('active');
-		products[index].isMatch = true;
-
-	} else {
-		$selected.parent().removeClass('active');
-		products[index].isMatch = false;
-	}
-}
-
-
-function createAsset (obj){
-	if (!obj || "object" !== typeof obj || obj.length == 0 || typeof obj.asset == "undefined") return;
-
-    var asset = obj.asset;
-    asset.assetId = obj.id;
-    asset.assetTitle = obj.title;
-    asset.loginId = obj.loginId;
-
-
-    if (!asset.sources) asset.sources = [{ file: asset.videoId }];
-   	asset.type = asset.type || 'youtube';
-
-    return asset;
-};
+//     return asset;
+// };
 
 
 
-function resizePlayer() {
-	player.resize($('#' + playerDivId).width(), document.getElementById(playerDivId).offsetHeight);
-}
+// function resizePlayer() {
+// 	player.resize($('#' + playerDivId).width(), document.getElementById(playerDivId).offsetHeight);
+// }

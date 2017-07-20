@@ -1,11 +1,17 @@
 ;(function(window){
 
+  /**
+   * Properties
+   */
   var profileVersion = null;
   var recommendedProducts = null;
   var recommendedProductsVideo = null;
   var player = null;
 
-  //Loads a video/recommended products set
+
+  /**
+   * Methods
+   */
   var getRecommendedProducts = function(cback){
     return $.ajax({
       url: app.apiBaseUrl + "/profilestest/productRecommendation",
@@ -32,27 +38,14 @@
     $("#VideoDetails").html(app.utils.render("#VideoDetailsTemplate",recommendedProductsVideo));
   };
 
-  //Load and render the initial set
-  getRecommendedProducts(function(data){
-    profileVersion = data.profileVersion;
-    recommendedProducts = data.products;
-    recommendedProductsVideo = data.video;
 
-    renderRecommendedSet();
-
-    player = new Player('player', {
-      api_base_url: app.apiBaseUrl,
-      data: [recommendedProductsVideo],
-      autoplay: true
-    });
-  });
-
-  //Select a recommended product as a match
+  /**
+   * Interaction
+   */
   $(document).on('click', '.recommended-product', function(){
     $(this).toggleClass('match');
   });
 
-  //Submit a match
   $(document).on('click', '#Submit', function(){
     var $matches = $('.recommended-product.match');
     
@@ -75,12 +68,32 @@
         version: profileVersion,
         videoId: recommendedProductsVideo.id,
         products: recommendedProducts,
-        user: localStorage.getItem("username")
+        user: app.user
       })
     });
   });
 
-  //Skip the current set, reload the page
   $(document).on('click', '#Skip', app.utils.reload);
+  
+  
+  /**
+   * Entry point
+   */
+
+  $("#loginId").val(app.loginId);
+
+  getRecommendedProducts(function(data){
+    profileVersion = data.profileVersion;
+    recommendedProducts = data.products;
+    recommendedProductsVideo = data.video;
+
+    renderRecommendedSet();
+
+    player = new Player('player', {
+      api_base_url: app.apiBaseUrl,
+      data: [recommendedProductsVideo],
+      autoplay: true
+    });
+  });
 
 }(window));
