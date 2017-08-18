@@ -59,14 +59,28 @@ $( document ).ready(function() {
 		dataType: "jsonp",
 		error: function(){}
   }).done(function(data){
+    
       var xaxis=[];
       var yaxis=[];
+      var series = [];
       for (var i in data) {
-        yaxis.push(Number(data[i]["_cnt"]));
-        xaxis.push(data[i]["version"]);
+        series.unshift({
+          name: String(data[i]["version"]),
+          data: [Number(data[i]["_cnt"])],
+          stack: 'version'
+        });
       }
 
       Highcharts.chart('report-size', {
+      chart: {
+        type: 'column' 
+      },
+      
+      plotOptions: {
+        column: {
+            stacking: 'normal'
+        }
+      },
       legend: {
         enabled: false
       },
@@ -85,12 +99,10 @@ $( document ).ready(function() {
           }
       },
       xAxis: {
-          categories: xaxis
+          categories: ["Version"]
       },
 
-      series: [{
-          data: yaxis
-      }]
+      series:series
     });
 	    
   });
