@@ -127,7 +127,7 @@ footer {
 
 .tvp-title {
 	font-size: 16px;
-	font-weight: 400;
+	font-weight: bold;
 }
 
 #VideoTitle, #VideoTitlePR {
@@ -188,13 +188,13 @@ footer {
 	padding: 4px;
 }
 
-.product-img-thumb-wrapper.active {
+.match .product-img-thumb-wrapper {
 	cursor: pointer;
 	border: 4px solid #7ED321;
 	box-shadow: 0 2px 8px 0 rgba(0,0,0,0.2);
 }
 
-.product-img-thumb-wrapper.active::before {
+.match .product-img-thumb-wrapper::before {
 	position: absolute;
 	font-family: "Material Icons";
     content: "\E5CA";
@@ -208,7 +208,7 @@ footer {
     right: 12px
 }
 
-.product-img-thumb-wrapper:hover:not(.active) {
+.recommended-product:not(.match):hover .product-img-thumb-wrapper {
 	cursor: pointer;
 	border: 4px solid #DDDDDD;
 	box-shadow: 0 2px 8px 0 rgba(0,0,0,0.2);
@@ -235,6 +235,7 @@ footer {
 }
 
 .player-holder {
+	background-color: black;
 	height: 0;
     width: 100%;
     position: relative;
@@ -342,10 +343,16 @@ footer {
  
     /* Position the tooltip text - see examples below! */
     position: absolute;
+    bottom: 100%;
     z-index: 1;
 }
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
+
+.top-buffer { 
+  margin-top:25px; 
+}
+
 

@@ -1,0 +1,103 @@
+{{ partial "header.html" . }}
+
+    <div class="spinner-overlay">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+    </div>
+
+    <div id="NameField" class="container">
+        <div class="pure-u-1 pure-u-md-1-3 name-field">
+            <label for="first-name">Enter Name:</label>
+            <input id="username" class="pure-u-2"  type="text">
+            <a class="pure-button" href="#" id="SetName">Submit</a>
+        </div>
+    </div>
+
+    <div id="ProfilesTable" class="container" style="display: none;">
+        <h3 id="UserWelcome"></h3>
+        <table id="TVP-table" class="pure-table tvp-table">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Version</th>
+                    <th>Accuracy</th>
+                    <th><a href="#" onclick="fetchStatistics()">Data</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr class="odd">
+                    <td>
+                        <a href='{{ "tests/recommendation/product" | relURL }}' class="tvp-link">
+                            Test Product Recommendations
+                        </a>
+                    </td>
+                    <td id="productRecommendationsVersion"></td>
+                    <td id="productRecommendationsAccuracy"></td>
+                    <td id="productRecommendationsDataSet"></td>
+                </tr>
+                <tr class="even">
+                    <td>
+                        <a href='{{ "tests/profiles/training?entity=video" | relURL }}' class="tvp-link">
+                            Videos Profile Training
+                        </a>
+                    </td>
+                    <td></td>
+                    <td id="profileVideosAccuracy"></td>
+                    <td id="profileVideosDataSet"></td>
+                </tr>
+                <tr class="odd">
+                    <td>
+                        <a href='{{ "tests/profiles/training?entity=product" | relURL }}' class="tvp-link">
+                            Product Profile Training
+                        </a>
+                    </td>
+                    <td></td>
+                    <td id="profileProductsAccuracy"></td>
+                    <td id="profileProductsDataSet"></td>
+                </tr>
+                <tr class="even">
+                    <td>
+                      <a href='{{ "tests/profiles/correction?entity=video" | relURL }}' class="tvp-link">
+                        Videos Profile Correction
+                      </a>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    {{ partial "footer.html" . }}
+
+    <!-- Templates -->
+    <script id="ProfileRowTemplate" type="text/template">
+      <tr>
+        <td>{id}. {name} 
+          <a href='{{ "tests/profiles/suggestion" | relURL }}?entity=video&profileId={id}' class="tvp-link">[video]</a>
+          <a href='{{ "tests/profiles/suggestion" | relURL }}?entity=product&profileId={id}' class="tvp-link">[product]</a>
+        </td>
+        <td>{version}</td>
+        <td id="profileAccuracy_{id}"></td>
+        <td id="profileDataSet_{id}"></td>
+      </tr>
+    </script>
+    <script id="ProfileOptionTemplate" type="text/template">
+      <option value="profile-{id}-{key}-{version}">{name}: {description}</option>
+    </script>
+
+    <script type="text/javascript" src='{{ "js/modernizr.custom.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/jquery-3.2.1.min.js" | relURL }}'></script>
+    <script type="text/javascript" src="//cdnjs.tvpage.com/tvplayer/tvp-3.1.0.min.js" ></script>
+    <script type="text/javascript" src='{{ "js/classie.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/dialogFx.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/select2.full.min.js" | relURL }}'></script>
+    <script type="text/javascript">window.SiteParams = {{ $.Site.Params }} || {};</script>
+    <script type="text/javascript" src='{{ "js/app.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/pages/index.js" | relURL }}'></script>
+  </body>
+</html>

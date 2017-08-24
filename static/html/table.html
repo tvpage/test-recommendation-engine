@@ -1,0 +1,55 @@
+<div id="ProfilesTable" class="container" style="display: none;">
+  <h3 id="UserWelcome"></h3>
+  <table id="TVP-table" class="pure-table tvp-table">
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Version</th>
+        <th>Accuracy</th>
+        <th><a href="#" onclick="fetchStatistics()">Data</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="odd">
+        <td>
+          <a  onclick="fetchProductRecommendation();" class="tvp-link">
+            Test Product Recommendations
+          </a>
+        </td>
+        <td id="productRecommendationsVersion"></td>
+        <td id="productRecommendationsAccuracy"></td>
+        <td id="productRecommendationsDataSet"></td>
+      </tr>
+      <tr class="even">
+        <td>
+          <a onclick="fetchProfileVideos();" class="tvp-link">
+            Videos Profile Training
+          </a>
+        </td>
+        <td></td>
+        <td id="profileVideosAccuracy"></td>
+        <td id="profileVideosDataSet"></td>
+      </tr>
+      <tr class="odd">
+        <td>
+          <a  onclick="fetchProfileProducts();" class="tvp-link">
+            Product Profile Training
+          </a>
+        </td>
+        <td></td>
+        <td id="profileProductsAccuracy"></td>
+        <td id="profileProductsDataSet"></td>
+      </tr>
+      <tr class="even">
+        <td>
+          <a  onclick="fetchNegativeVideoTests();" class="tvp-link">
+            Videos Profile Correction
+          </a>
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

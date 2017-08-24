@@ -1,3 +1,4 @@
 {
-	"layout": "index", "title": "Recommendation Engine"
+	"layout": "index", 
+	"title": "Recommendation Engine"
 }

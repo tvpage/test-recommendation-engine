@@ -1,0 +1,63 @@
+{{ partial "header.html" . }}
+
+    <div id="SelectionView" class="tvp-container-center">
+        <div id="EntityDetails"></div>
+    </div>
+
+    <div id="VideoProfileView" class="tvp-container-center">
+        <h3 class="tvp-title">Matches Profile</h3>
+        <h2 id="ProfileTitle" class="tvp-profile-title">...</h2>
+        <div class="tvp-button-group">
+            <button id="FalseMatch" data-dialog="FalseMatchDialog"  class="tvp-button btn-red">No</button>
+            <button id="TrueMatch" class="tvp-button btn-green">Yes</button>
+            <button id="Skip" class="tvp-button btn-yellow">Skip</button>
+        </div>
+    </div>
+
+    {{ partial "footer.html" . }}
+
+    <div id="FalseMatchDialog" class="dialog">
+        <div class="dialog__overlay"></div>
+        <div class="dialog__content">
+            <h2>Select Correct Profile Match</h2>
+            <select id="CorrectProfileId" style="width: 340px;"></select>
+            <br>
+            <div class="close-modal">
+                <button class="action" id="modalClose" data-dialog-close style="display: none;"></button>
+                <button id="SetCorrection">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <script id="EntityDetailsTemplate" type="text/template">
+      <h3 id="EntityTitle" class="tvp-title">{title}</h3>
+      <p id="EntityDescription">{description}</p>
+    </script>
+    <script id="PlayerTemplate" type="text/template">
+      <div id="TVPlayerHolder" class="player-holder">
+        <div id="player"></div>
+      </div>
+    </script>
+    <script id="ProductTemplate" type="text/template">
+      <div id="TVProductHolder" class="product-holder">
+        <img src="{imageUrl}" style="max-height:480px;" />
+      </div>
+    </script>
+    <script id="ProfileOptionTemplate" type="text/template">
+      <option value="profile-{id}-{key}-{version}">{name}: {description}</option>
+    </script>
+    
+    <!-- Scripts -->
+    <script type="text/javascript" src='{{ "js/modernizr.custom.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/jquery-3.2.1.min.js" | relURL }}'></script>
+    <script type="text/javascript" src="//cdnjs.tvpage.com/tvplayer/tvp-3.1.0.min.js" ></script>
+    <script type="text/javascript" src='{{ "js/classie.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/dialogFx.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/select2.full.min.js" | relURL }}'></script>
+    <script type="text/javascript">window.SiteParams = {{ $.Site.Params }} || {};</script>
+    <script type="text/javascript" src='{{ "js/app.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/libs/player.js" | relURL }}'></script>
+    <script type="text/javascript" src='{{ "js/pages/profiles-suggestion.js" | relURL }}'></script>
+  </body>
+</html>
