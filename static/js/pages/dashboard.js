@@ -10,7 +10,7 @@
 $( document ).ready(function() {
 
   var app = {
-    apiBaseUrl: "local.tvpage.com/api"
+    apiBaseUrl: "beta.tvpage.com/api"
   };
 	$.ajax({
 		url: '//' + app.apiBaseUrl + '/profilestest/report/accuracy',

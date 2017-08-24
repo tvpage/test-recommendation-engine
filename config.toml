@@ -2,4 +2,4 @@ languageCode = "en-us"
 title = "TVPage Recommendation Engine"
 
 [params]
-apiBaseUrl = "//local.tvpage.com/api"
+apiBaseUrl = "//beta.tvpage.com/api"
