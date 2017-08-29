@@ -1,5 +1,6 @@
 languageCode = "en-us"
 title = "TVPage Recommendation Engine"
+baseURL = "//tvpage-recommendation-engine-test.netlify.com"
 
 [params]
 apiBaseUrl = "//beta.tvpage.com/api"
