@@ -10,10 +10,10 @@
 $( document ).ready(function() {
 
   var app = {
-    apiBaseUrl: "local.tvpage.com/api"
+    apiBaseUrl: "beta.tvpage.com/api"
   };
 	$.ajax({
-		url: '//' + app.apiBaseUrl + '/profilestest/report/accuracy',
+		url: '//' + app.apiBaseUrl + '/profiles/report/accuracy',
 		dataType: "jsonp",
 		error: function() {
 		}
@@ -55,7 +55,7 @@ $( document ).ready(function() {
   
 	//Fetch the profiles and render them
 	$.ajax({
-		url: '//' + app.apiBaseUrl + '/profilestest/report/size',
+		url: '//' + app.apiBaseUrl + '/profiles/report/size',
 		dataType: "jsonp",
 		error: function(){}
   }).done(function(data){
@@ -109,7 +109,7 @@ $( document ).ready(function() {
 
 	//Fetch the profiles and render them
 	$.ajax({
-		url: '//' + app.apiBaseUrl + '/profilestest/report/coverage',
+		url: '//' + app.apiBaseUrl + '/profiles/report/coverage',
 		dataType: "jsonp",
 		error: function() {
 		}
@@ -151,7 +151,7 @@ $( document ).ready(function() {
 
 	//Fetch the profiles and render them
 	$.ajax({
-		url: '//' + app.apiBaseUrl + '/profilestest/report/newcases',
+		url: '//' + app.apiBaseUrl + '/profiles/report/newcases',
 		dataType: "jsonp",
 		error: function() {
 		}
@@ -192,7 +192,7 @@ $( document ).ready(function() {
   });
 
 	$.ajax({
-		url: '//' + app.apiBaseUrl + '/profilestest/report/version',
+		url: '//' + app.apiBaseUrl + '/profiles/report/version',
 		dataType: "jsonp",
 		error: function() {
 		}
