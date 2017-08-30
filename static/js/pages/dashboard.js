@@ -18,38 +18,70 @@ $( document ).ready(function() {
 		error: function() {
 		}
 	}).done(function(data){
-      var xaxis=[];
-      var yaxis=[];
-      for (var i in data) {
-        yaxis.push( Math.round(Number(data[i][1])/ (Number(data[i][0]) + Number(data[i][1])) * 100));
-        xaxis.push(i);
+      if (!Array.isArray(data)) { 
+        return false;
       }
-
-      Highcharts.chart('report-accuracy', {
-
-      legend: {
-        enabled: false
-      },
-      title: {
-          text: 'Accuracy'
-      },
-
-      subtitle: {
-          text: 'Breakdown of Accuracy by Version'
-      },
-
-      yAxis: {
-          title: {
-              text: 'Accuracy'
+      var xdata=[];
+      var versions = {};
+      for (var i=0; i<data.length;i++) {
+        xdata.push(i);
+        var obj = data[i];
+        for (var version in obj) {
+          if (!versions.hasOwnProperty(version)){
+            versions[version]=[];
+            for (var j=0;j<i;j++) {
+              versions[version].push(null);
+            }
           }
-      },
-      xAxis: {
-          categories: xaxis
-      },
-
-      series: [{
-          data: yaxis
-      }]
+          var perc = Math.round(Number(obj[version][1])/ (Number(obj[version][0]) + Number(obj[version][1])) * 100);
+          versions[version].push(perc);
+        }
+      }
+      
+      var series = [];
+      for (var v in versions) {
+        series.push({
+          name: v,
+          data: versions[v]
+        });
+      }
+  
+    Highcharts.chart('report-accuracy', {
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: 'Accuracy'
+        },
+        subtitle: {
+            text: 'Breakdown by Run x Test Data Version'
+        },
+        xAxis: {
+            categories: xdata,
+            title: {
+                text: null
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {},
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        tooltip: {
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    enabled: true
+                }
+            }
+        },
+        credits: {
+            enabled: false
+        },
+        series: series
     });
   });
   
@@ -74,6 +106,9 @@ $( document ).ready(function() {
       Highcharts.chart('report-size', {
       chart: {
         type: 'column' 
+      },
+      credits: {
+          enabled: false
       },
       
       plotOptions: {
@@ -121,6 +156,9 @@ $( document ).ready(function() {
       xaxis.push(data[i]["name"]);
     }
     Highcharts.chart('report-coverage', {
+      credits: {
+          enabled: false
+      },
       
       legend: {
         enabled: false
@@ -163,6 +201,9 @@ $( document ).ready(function() {
       xaxis.push(data[i]["name"]);
     }
     Highcharts.chart('report-newcases', {
+      credits: {
+          enabled: false
+      },
       
       legend: {
         enabled: false
