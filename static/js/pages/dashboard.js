@@ -10,7 +10,7 @@
 $( document ).ready(function() {
 
   var app = {
-    apiBaseUrl: "beta.tvpage.com/api"
+    apiBaseUrl: "local.tvpage.com/api"
   };
 	$.ajax({
 		url: '//' + app.apiBaseUrl + '/profilestest/report/accuracy',
@@ -189,5 +189,37 @@ $( document ).ready(function() {
           data: yaxis
       }]
     });
+  });
+
+	$.ajax({
+		url: '//' + app.apiBaseUrl + '/profilestest/report/version',
+		dataType: "jsonp",
+		error: function() {
+		}
+	}).done(function(data){
+    var htmlString = '';
+    if (!data) {
+      htmlString =
+        '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">' + 
+        '<div class="d-flex w-100 justify-content-between">' + 
+        '<h5 class="mb-2" id="tvp-index-version">Version Unknown</h5>' +
+        '<small class="text-muted"><span class="badge badge-danger">Down</span></small>' +
+        '</div>' + 
+        '<p class="mb-1" id="">Problem with Index</p>' + 
+        '<div><small></small></div>' + 
+        '</a>';
+    }else {
+      htmlString =
+        '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">' + 
+        '<div class="d-flex w-100 justify-content-between">' + 
+        '<h5 class="mb-2" id="tvp-index-version">Version '+ data.version+'</h5>' +
+        '<small class="text-muted"><span class="badge badge-success">Live</span></small>' +
+        '</div>' + 
+        '<p class="mb-1" id=""></p>' + 
+        '<div><small>Live since ' + data.date +'</small></div>' + 
+        '</a>';
+      
+    }
+    $('#tvp-version').html(htmlString);
   });
 });
